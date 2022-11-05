@@ -11,16 +11,8 @@ else
 fi
 
 # Copy dotfiles
-cp $HOME/{.zshrc,.zshenv,.vimrc,.tmux.conf}
-cp $HOME/.config/{alacritty/alacritty.yml,nvim/init.vim}
-
-
-# Copy vs code files
-cp $HOME/Library/Application\ 
-Support/Code/User/{keybindings.json,settings.json} .
-
-# Copy list of extensions
-code --list-extensions --show-versions >> ../../vscode/extensions.txt
+cp $HOME/{.zshrc,.zshenv,.vimrc,.tmux.conf} .
+cp $HOME/.config/{alacritty/alacritty.yml,nvim/init.vim} .
 
 
 # Ceck git status
@@ -33,4 +25,4 @@ fi
 
 git add -u;
 git commit -m "New backup `date +'%Y-%m-%d %H:%M:%S'`";
-git puch origin main
+git push origin main
