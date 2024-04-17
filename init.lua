@@ -33,7 +33,7 @@ vim.opt.scrolloff = 7
 
 local TAB_WIDTH = 4
 vim.opt.tabstop = TAB_WIDTH
-vim.opt.tabstop = TAB_WIDTH
+vim.opt.shiftwidth = TAB_WIDTH
 vim.opt.expandtab = true
 
 vim.opt.wrap = false
@@ -68,6 +68,13 @@ if not vim.loop.fs_stat(lazypath) then
 	vim.fn.system({ "git", "clone", "--filter=blob:none", "--branch=stable", lazyrepo, lazypath })
 end ---@diagnostic disable-next-line: undefined-field
 vim.opt.rtp:prepend(lazypath)
+
+vim.api.nvim_exec(
+	[[
+	autocmd FileType go setlocal shiftwidth=4 tabstop=4
+]],
+	false
+)
 
 require("lazy").setup({
 	{ "tpope/vim-sleuth" },
@@ -471,7 +478,18 @@ require("lazy").setup({
 		cmd = "Copilot",
 		event = "InsertEnter",
 		config = function()
-			require("copilot").setup({})
+			require("copilot").setup({
+				suggestion = {
+					enabled = true,
+					auto_trigger = true,
+					debounce = 100,
+					keymap = {
+						accept = "<CR>",
+						next = "<C-j>",
+						prev = "<C-k>",
+					},
+				},
+			})
 		end,
 	},
 })
