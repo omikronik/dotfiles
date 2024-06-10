@@ -42,11 +42,21 @@ vim.wo.wrap = false
 vim.opt.hlsearch = true
 vim.keymap.set("n", "<ESC>", "<cmd>nohlsearch<CR>")
 
+vim.o.termguicolors = true
+vim.o.background = "dark"
+vim.api.nvim_command([[
+	augroup ChangeBackgroundColour
+		autocmd colorscheme * :hi normal guibg=NONE
+	augroup END
+]])
+
 -- user ctrl+hjkl to move splits
 vim.keymap.set("n", "<C-h>", "<C-w><C-h>", { desc = "Move focus to the left window" })
 vim.keymap.set("n", "<C-l>", "<C-w><C-l>", { desc = "Move focus to the right window" })
 vim.keymap.set("n", "<C-j>", "<C-w><C-j>", { desc = "Move focus to the lower window" })
 vim.keymap.set("n", "<C-k>", "<C-w><C-k>", { desc = "Move focus to the upper window" })
+
+vim.filetype.add({ extension = { templ = "templ" } })
 
 -- [[ Basic Autocommands ]]
 --  See `:help lua-guide-autocommands`
@@ -72,6 +82,13 @@ vim.opt.rtp:prepend(lazypath)
 vim.api.nvim_exec(
 	[[
 	autocmd FileType go setlocal shiftwidth=4 tabstop=4
+]],
+	false
+)
+
+vim.api.nvim_exec(
+	[[
+	autocmd FileType html setlocal shiftwidth=2 tabstop=2
 ]],
 	false
 )
@@ -430,7 +447,7 @@ require("lazy").setup({
 				--  the list of additional_vim_regex_highlighting and disabled languages for indent.
 				additional_vim_regex_highlighting = { "ruby" },
 			},
-			indent = { enable = true, disable = { "ruby" } },
+			indent = { enable = true },
 		},
 		config = function(_, opts)
 			-- [[ Configure Treesitter ]] See `:help nvim-treesitter`
@@ -471,25 +488,5 @@ require("lazy").setup({
 		-- See `:help ibl`
 		main = "ibl",
 		opts = {},
-	},
-	{
-		"zbirenbaum/copilot.lua",
-		opts = {},
-		cmd = "Copilot",
-		event = "InsertEnter",
-		config = function()
-			require("copilot").setup({
-				suggestion = {
-					enabled = true,
-					auto_trigger = true,
-					debounce = 100,
-					keymap = {
-						accept = "<CR>",
-						next = "<C-j>",
-						prev = "<C-k>",
-					},
-				},
-			})
-		end,
 	},
 })

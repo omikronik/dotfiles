@@ -19,12 +19,13 @@ font:
   size: 16
 
 window:
-  decorations: Transparent
+  decorations: Buttonless
   padding:
-    x: 5
-    y: 5
+    x: 6
+    y: 6
       
-  opacity: 0.95
+  opacity: 0.97
+  blur: true
 
 
 # Colors (Gruvbox Material Dark Medium)
