@@ -2,14 +2,14 @@ vim.g.mapleader = " "
 vim.g.maplocalleader = " "
 
 vim.opt.number = true
+vim.opt.relativenumber = true
 
 vim.opt.mouse = "a"
 
 vim.opt.showmode = false
 
-vim.schedule(function()
-	vim.opt.clipboard = "unnamedplus"
-end)
+vim.opt.clipboard = "unnamedplus"
+
 vim.opt.breakindent = true
 
 vim.opt.undofile = true
@@ -25,32 +25,40 @@ vim.opt.timeoutlen = 300
 vim.opt.splitright = true
 vim.opt.splitbelow = true
 
-vim.opt.list = true
-vim.opt.listchars = { tab = "❘ ", trail = "·", nbsp = "␣" }
+vim.opt.colorcolumn = { 80, 120 }
+vim.cmd("highlight ColorColumn ctermbg=0")
+vim.cmd("highlight ColorColumn guibg=lightgrey")
 
+vim.opt.list = true
+--vim.opt.listchars = { tab = "❘ ", trail = "·", nbsp = "␣" }
+vim.opt.listchars = { tab = "| ", trail = "·", nbsp = "␣" }
+
+-- show replace substitution live
 vim.opt.inccommand = "split"
 
 vim.opt.scrolloff = 7
 
 local TAB_WIDTH = 4
 vim.opt.tabstop = TAB_WIDTH
-vim.opt.shiftwidth = TAB_WIDTH
+vim.opt.softtabstop = TAB_WIDTH
+vim.bo.shiftwidth = TAB_WIDTH
 vim.opt.expandtab = true
+
+vim.api.nvim_create_autocmd("FileType", {
+	pattern = "typescript",
+	callback = function()
+		vim.bo.shiftwidth = TAB_WIDTH
+		vim.bo.tabstop = TAB_WIDTH
+		vim.bo.softtabstop = TAB_WIDTH
+		vim.bo.expandtab = true
+	end,
+})
 
 vim.opt.wrap = false
 vim.wo.wrap = false
 
 vim.opt.hlsearch = true
--- open quick fix list
 vim.keymap.set("n", "<ESC>", "<cmd>nohlsearch<CR>")
-
-vim.o.termguicolors = true
-vim.o.background = "dark"
-vim.api.nvim_command([[
-	augroup ChangeBackgroundColour
-		autocmd colorscheme * :hi normal guibg=NONE
-	augroup END
-]])
 
 -- user ctrl+hjkl to move splits
 vim.keymap.set("n", "<C-h>", "<C-w><C-h>", { desc = "Move focus to the left window" })
@@ -58,7 +66,9 @@ vim.keymap.set("n", "<C-l>", "<C-w><C-l>", { desc = "Move focus to the right win
 vim.keymap.set("n", "<C-j>", "<C-w><C-j>", { desc = "Move focus to the lower window" })
 vim.keymap.set("n", "<C-k>", "<C-w><C-k>", { desc = "Move focus to the upper window" })
 
-vim.filetype.add({ extension = { templ = "templ" } })
+vim.api.nvim_set_keymap("n", "<leader>bd", ":bp|bd #<CR>", { noremap = true, silent = true })
+vim.api.nvim_set_keymap("n", "<leader>bp", ":bp<CR>", { noremap = true, silent = true })
+vim.api.nvim_set_keymap("n", "<leader>bn", ":bn<CR>", { noremap = true, silent = true })
 
 -- [[ Basic Autocommands ]]
 --  See `:help lua-guide-autocommands`
@@ -81,20 +91,6 @@ if not vim.loop.fs_stat(lazypath) then
 end ---@diagnostic disable-next-line: undefined-field
 vim.opt.rtp:prepend(lazypath)
 
-vim.api.nvim_exec(
-	[[
-	autocmd FileType go setlocal shiftwidth=4 tabstop=4
-]],
-	false
-)
-
-vim.api.nvim_exec(
-	[[
-	autocmd FileType html setlocal shiftwidth=2 tabstop=2
-]],
-	false
-)
-
 require("lazy").setup({
 	{ "tpope/vim-sleuth" },
 	{ "numToStr/Comment.nvim", opts = {} },
@@ -112,8 +108,11 @@ require("lazy").setup({
 	},
 	{
 		"folke/which-key.nvim",
-		event = "VimEnter",
-		config = function()
+		event = "VimEnter", -- Sets the loading event to 'VimEnter'
+		opts = {
+			preset = "modern",
+		},
+		config = function() -- This is the function that runs, AFTER loading
 			require("which-key").setup()
 
 			-- Document existing key chains
@@ -125,6 +124,7 @@ require("lazy").setup({
 				{ "<leader>w", group = "[W]orkspace" },
 				{ "<leader>t", group = "[T]oggle" },
 				{ "<leader>h", group = "Git [H]unk", mode = { "n", "v" } },
+				{ "<leader>b", group = "[B]uffer" },
 			})
 		end,
 	},
@@ -158,6 +158,11 @@ require("lazy").setup({
 				extensions = {
 					["ui-select"] = {
 						require("telescope.themes").get_dropdown(),
+					},
+				},
+				defaults = {
+					file_ignore_patterns = {
+						"node_modules",
 					},
 				},
 			})
@@ -204,7 +209,8 @@ require("lazy").setup({
 
 			-- Useful status updates for LSP.
 			-- NOTE: `opts = {}` is the same as calling `require('fidget').setup({})`
-			{ "j-hui/fidget.nvim", opts = {} },
+			-- { "j-hui/fidget.nvim", opts = {} },
+			"rcarriga/nvim-notify",
 
 			-- `neodev` configures Lua LSP for your Neovim config, runtime and plugins
 			-- used for completion, annotations and signatures of Neovim apis
@@ -251,8 +257,6 @@ require("lazy").setup({
 			capabilities = vim.tbl_deep_extend("force", capabilities, require("cmp_nvim_lsp").default_capabilities())
 
 			local servers = {
-				gopls = {},
-				rust_analyzer = {},
 				lua_ls = {
 					-- cmd = {...},
 					-- filetypes = { ...},
@@ -266,6 +270,9 @@ require("lazy").setup({
 							-- diagnostics = { disable = { 'missing-fields' } },
 						},
 					},
+				},
+				eslint = {
+					quiet = true,
 				},
 			}
 			require("mason").setup()
@@ -313,7 +320,10 @@ require("lazy").setup({
 				--
 				-- You can use a sub-list to tell conform to run *until* a formatter
 				-- is found.
-				javascript = { { "prettierd", "prettier" } },
+				javascript = { "prettierd", "prettier", stop_after_first = true },
+				typescript = { "prettierd", "prettier", stop_after_first = true },
+				javescriptreact = { "prettierd", "prettier", stop_after_first = true },
+				typescriptreact = { "prettierd", "prettier", stop_after_first = true },
 			},
 		},
 	},
@@ -427,11 +437,24 @@ require("lazy").setup({
 		priority = 1000,
 		init = function()
 			-- load
-			vim.cmd.colorscheme("gruvbox")
-			vim.cmd.hi("Comment gui=none")
+			--	vim.cmd.colorscheme("gruvbox")
+			--	vim.cmd.hi("Comment gui=none")
+			--	vim.cmd.hi("Normal guibg=none")
 		end,
 	},
 	{
+		"rose-pine/neovim",
+		name = "rose-pine",
+		priority = 1000,
+		init = function()
+			-- load
+			vim.cmd.colorscheme("rose-pine-moon")
+			vim.cmd.hi("Comment gui=none")
+			vim.cmd.hi("Normal guibg=none")
+		end,
+	},
+	{
+
 		"folke/todo-comments.nvim",
 		event = "VimEnter",
 		dependencies = { "nvim-lua/plenary.nvim" },
@@ -451,12 +474,12 @@ require("lazy").setup({
 				--  the list of additional_vim_regex_highlighting and disabled languages for indent.
 				additional_vim_regex_highlighting = { "ruby" },
 			},
-			indent = { enable = true },
+			indent = { enable = true, disable = { "ruby" } },
 		},
 		config = function(_, opts)
 			-- [[ Configure Treesitter ]] See `:help nvim-treesitter`
 
-			---@diagnostic disable-next-line: missing-fields
+			-- @diagnostic disable-next-line: missing-fields
 			require("nvim-treesitter.configs").setup(opts)
 
 			-- There are additional nvim-treesitter modules that you can use to interact
@@ -494,16 +517,162 @@ require("lazy").setup({
 		opts = {},
 	},
 	{
+		"nvim-tree/nvim-web-devicons",
+	},
+	{
+		"brenoprata10/nvim-highlight-colors",
+		config = function()
+			require("nvim-highlight-colors").setup({})
+		end,
+	},
+	{
 		"echasnovski/mini.nvim",
 		config = function()
+			require("mini.ai").setup({ n_lines = 500 })
 			require("mini.surround").setup()
+
 			local statusline = require("mini.statusline")
 			statusline.setup({ use_icons = vim.g.have_nerd_font })
-
-			--@diagnostic disable-next-line: duplicate-set-field
+			---@diagnostic disable-next-line: duplicate-set-field
 			statusline.section_location = function()
 				return "%2l:%-2v"
 			end
+		end,
+	},
+	{ -- this is poggers
+		"stevearc/oil.nvim",
+		dependencies = { "nvim-tree/nvim-web-devicons" },
+		config = function()
+			require("oil").setup({
+				columns = { "icon" },
+				keymaps = {
+					["<C-h>"] = false,
+					["<M-h>"] = "actions.select_split",
+				},
+				view_options = {
+					show_hidden = true,
+				},
+			})
+
+			-- Open parent dir in current window
+			vim.keymap.set("n", "-", "<CMD>Oil<CR>", { desc = "Open parent directory" })
+
+			-- Open parent dir in floating window
+			vim.keymap.set("n", "<space>-", require("oil").toggle_float)
+		end,
+	},
+	{ -- show lsp issues in window
+		"folke/trouble.nvim",
+		opts = {
+			auto_preview = false,
+		},
+		cmd = "Trouble",
+		keys = {
+			{
+				"<leader>xx",
+				"<cmd>Trouble diagnostics toggle<cr>",
+				desc = "Diagnostics (Trouble)",
+			},
+			{
+				"<leader>xX",
+				"<cmd>Trouble diagnostics toggle filter.buf=0<cr>",
+				desc = "Buffer Diagnostics (Trouble)",
+			},
+			{
+				"<leader>cs",
+				"<cmd>Trouble symbols toggle focus=false<cr>",
+				desc = "Symbols (Trouble)",
+			},
+			{
+				"<leader>cl",
+				"<cmd>Trouble lsp toggle focus=false win.position=right<cr>",
+				desc = "LSP Definitions / references / ... (Trouble)",
+			},
+			{
+				"<leader>xL",
+				"<cmd>Trouble loclist toggle<cr>",
+				desc = "Location List (Trouble)",
+			},
+			{
+				"<leader>xQ",
+				"<cmd>Trouble qflist toggle<cr>",
+				desc = "Quickfix List (Trouble)",
+			},
+		},
+	},
+	{ -- required for codecompanion
+		"zbirenbaum/copilot.lua",
+		cmd = "Copilot",
+		build = ":Copilot auth",
+		opts = {
+			suggestion = { enabled = false },
+			panel = {
+				enabled = false,
+				layout = {
+					position = "right",
+					ratio = 0.4,
+				},
+			},
+			filetypes = {
+				markdown = true,
+				help = true,
+			},
+		},
+	},
+	{ -- copilot chat window
+		"olimorris/codecompanion.nvim",
+		dependencies = {
+			"nvim-lua/plenary.nvim",
+			"nvim-treesitter/nvim-treesitter",
+			"hrsh7th/nvim-cmp", -- Optional: For using slash commands and variables in the chat buffer
+			"nvim-telescope/telescope.nvim", -- Optional: For using slash commands
+			{ "MeanderingProgrammer/render-markdown.nvim", ft = { "markdown", "codecompanion" } },
+			{ "stevearc/dressing.nvim", opts = {} }, -- Optional: Improves `vim.ui.select`
+		},
+		config = function()
+			require("codecompanion").setup({
+				adapter = "copilot",
+				display = {
+					chat = {
+						render_headers = false,
+					},
+				},
+			})
+			vim.api.nvim_set_keymap("n", "<leader>bv", ":CodeCompanionChat<CR>", { noremap = true, silent = true })
+		end,
+	},
+	{
+		"folke/noice.nvim",
+		event = "VeryLazy",
+		opts = {
+			-- add any options here
+		},
+		dependencies = {
+			-- if you lazy-load any plugin below, make sure to add proper `module="..."` entries
+			"MunifTanjim/nui.nvim",
+			-- OPTIONAL:
+			--   `nvim-notify` is only needed, if you want to use the notification view.
+			--   If not available, we use `mini` as the fallback
+			"rcarriga/nvim-notify",
+		},
+		config = function()
+			require("noice").setup({
+				lsp = {
+					-- override markdown rendering so that **cmp** and other plugins use **Treesitter**
+					override = {
+						["vim.lsp.util.convert_input_to_markdown_lines"] = true,
+						["vim.lsp.util.stylize_markdown"] = true,
+						["cmp.entry.get_documentation"] = true, -- requires hrsh7th/nvim-cmp
+					},
+					presets = {
+						bottom_search = true, -- use a classic bottom cmdline for search
+						command_palette = true, -- position the cmdline and popupmenu together
+						long_message_to_split = true, -- long messages will be sent to a split
+						inc_rename = false, -- enables an input dialog for inc-rename.nvim
+						lsp_doc_border = false, -- add a border to hover docs and signature help
+					},
+				},
+			})
 		end,
 	},
 })
