@@ -39,17 +39,18 @@ vim.opt.inccommand = "split"
 vim.opt.scrolloff = 7
 
 local TAB_WIDTH = 4
+local TAB_WIDTH_WEB = 2
 vim.opt.tabstop = TAB_WIDTH
 vim.opt.softtabstop = TAB_WIDTH
 vim.bo.shiftwidth = TAB_WIDTH
 vim.opt.expandtab = true
 
 vim.api.nvim_create_autocmd("FileType", {
-	pattern = "typescript",
+	pattern = { "typescript", "typescriptreact", "javascript", "javascriptreact" },
 	callback = function()
-		vim.bo.shiftwidth = TAB_WIDTH
-		vim.bo.tabstop = TAB_WIDTH
-		vim.bo.softtabstop = TAB_WIDTH
+		vim.bo.shiftwidth = TAB_WIDTH_WEB
+		vim.bo.tabstop = TAB_WIDTH_WEB
+		vim.bo.softtabstop = TAB_WIDTH_WEB
 		vim.bo.expandtab = true
 	end,
 })
