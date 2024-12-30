@@ -55,6 +55,26 @@ vim.api.nvim_create_autocmd("FileType", {
 	end,
 })
 
+-- Turn off terminal buffer line numbers
+vim.api.nvim_create_autocmd("TermOpen", {
+	group = vim.api.nvim_create_augroup("custom-term-open", { clear = true }),
+	callback = function()
+		vim.opt.number = false
+		vim.opt.relativenumber = false
+	end,
+})
+
+-- Change terminal mode exit
+vim.keymap.set("t", "<ESC><ESC>", "<C-\\><C-n>", { desc = "exit terminal mode" })
+
+-- New terminal on left side
+vim.keymap.set("n", "<space>st", function()
+	vim.cmd.vnew()
+	vim.cmd.term()
+	vim.cmd.wincmd("H")
+	vim.api.nvim_win_set_width(0, 60)
+end)
+
 vim.opt.wrap = false
 vim.wo.wrap = false
 
@@ -164,6 +184,7 @@ require("lazy").setup({
 				defaults = {
 					file_ignore_patterns = {
 						"node_modules",
+						"target",
 					},
 				},
 			})
