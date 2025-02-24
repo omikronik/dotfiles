@@ -4,34 +4,56 @@ local config = wezterm.config_builder()
 
 local SOLID_LEFT_ARROW = wezterm.nerdfonts.nf_ple_right_half_circle_thick
 local X_ICON = wezterm.nerdfonts.nf_oct_x
-local orange = "#ea9a97"
+
+-- TODO: Figure out a way to dynamically set titlebar colours from theme
+
+-- Kanagawa Paper
+local background = "#333333"
+local black = "#0d0c0c"
+local red = "#c4746e"
+local green = "#b3c6a0"
+local yellow = "#c4b28a"
+local blue = "#315567"
+local purple = "#a292a3"
+local cyan = "#8ea4a2"
+local white = "#C8C093"
+local bg_light = "#393836"
+local bg_dark = "#1F1F28"
+local foreground = "#c5c9c5"
+
+--[[ rose pine moon
+local yellow = "#ea9a97"
 local red = "#eb6f92"
 local white = "#e0def4"
 local purple = "#c4a7e7"
-local base = "#232136"
-local surface = "#2a273f"
-local overlay = "#393552"
-local lightGray = "#908caa"
+local black = "#232136"
+local bg_dark = "#2a273f"
+local bg_light = "#393552"
+local foreground = "#908caa"
+]]
 
---local orange = "#e78a4e"
+-- Gruvbox
+--local yellow = "#e78a4e"
 --local green = "#a9b665"
 --local yellow = "#d8a657"
 --local red = "#ea6962"
 --local white = "#ddc7a1"
 --local purple = "#d3869b"
---local base = "#282828"
---local surface = "#32302f"
---local overlay = "#32302f"
---local lightGray = "#7c6f64"
+--local black = "#282828"
+--local bg_dark = "#32302f"
+--local bg_light = "#32302f"
+--local foreground = "#7c6f64"
 
-config.color_scheme = "rose-pine-moon"
+config.color_scheme_dirs = { "~/wezterm_colors" }
+config.color_scheme = "kanagawa-paper"
+--config.color_scheme = "rose-pine-moon"
 --config.color_scheme = "Gruvbox Material (Gogh)"
 
 config.max_fps = 240
 
 config.font = wezterm.font("FiraCode Nerd Font")
 config.font_size = 12
-config.window_background_opacity = 0.96
+config.window_background_opacity = 1
 
 config.use_fancy_tab_bar = false
 config.hide_tab_bar_if_only_one_tab = false
@@ -50,8 +72,8 @@ config.window_padding = {
 }
 
 config.window_frame = {
-	active_titlebar_bg = base,
-	inactive_titlebar_bg = base,
+	active_titlebar_bg = black,
+	inactive_titlebar_bg = black,
 }
 
 config.keys = {
@@ -110,6 +132,23 @@ config.window_frame = {
 	}),
 }
 
+config.font_rules = {
+	{
+		italic = false,
+		intensity = "Normal",
+		font = wezterm.font_with_fallback({
+			{ family = "FiraCode Nerd Font", weight = "Regular" },
+		}),
+	},
+	{
+		italic = false,
+		intensity = "Bold",
+		font = wezterm.font_with_fallback({
+			{ family = "FiraCode Nerd Font", weight = "Regular" },
+		}),
+	},
+}
+
 local title_map = {
 	["Leads"] = "Leads",
 	["Meetings"] = "Meetings",
@@ -157,26 +196,26 @@ wezterm.on("format-tab-title", function(tab, tabs, panes, config, hover, max_wid
 
 	if tab.is_active then
 		return {
-			{ Background = { Color = base } },
-			{ Foreground = { Color = orange } },
+			{ Background = { Color = bg_dark } },
+			{ Foreground = { Color = yellow } },
 			{ Text = SOLID_LEFT_ROUND },
-			{ Background = { Color = orange } },
-			{ Foreground = { Color = base } },
+			{ Background = { Color = yellow } },
+			{ Foreground = { Color = bg_dark } },
 			{ Text = (tab.tab_index + 1) .. ": " .. title .. " " },
-			{ Background = { Color = base } },
-			{ Foreground = { Color = orange } },
+			{ Background = { Color = bg_dark } },
+			{ Foreground = { Color = yellow } },
 			{ Text = SOLID_RIGHT_ROUND },
 		}
 	else
 		return {
-			{ Background = { Color = base } },
-			{ Foreground = { Color = overlay } },
+			{ Background = { Color = bg_dark } },
+			{ Foreground = { Color = bg_light } },
 			{ Text = SOLID_LEFT_ROUND },
-			{ Background = { Color = overlay } },
-			{ Foreground = { Color = lightGray } },
+			{ Background = { Color = bg_light } },
+			{ Foreground = { Color = foreground } },
 			{ Text = (tab.tab_index + 1) .. ": " .. title .. " " },
-			{ Background = { Color = base } },
-			{ Foreground = { Color = overlay } },
+			{ Background = { Color = bg_dark } },
+			{ Foreground = { Color = bg_light } },
 			{ Text = SOLID_RIGHT_ROUND },
 		}
 	end

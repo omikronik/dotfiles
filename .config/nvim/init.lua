@@ -25,12 +25,7 @@ vim.opt.timeoutlen = 300
 vim.opt.splitright = true
 vim.opt.splitbelow = true
 
-vim.opt.colorcolumn = { 80, 120 }
-vim.cmd("highlight ColorColumn ctermbg=0")
-vim.cmd("highlight ColorColumn guibg=lightgrey")
-
 vim.opt.list = true
---vim.opt.listchars = { tab = "❘ ", trail = "·", nbsp = "␣" }
 vim.opt.listchars = { tab = "| ", trail = "·", nbsp = "␣" }
 
 -- show replace substitution live
@@ -55,26 +50,6 @@ vim.api.nvim_create_autocmd("FileType", {
 	end,
 })
 
--- Turn off terminal buffer line numbers
-vim.api.nvim_create_autocmd("TermOpen", {
-	group = vim.api.nvim_create_augroup("custom-term-open", { clear = true }),
-	callback = function()
-		vim.opt.number = false
-		vim.opt.relativenumber = false
-	end,
-})
-
--- Change terminal mode exit
-vim.keymap.set("t", "<ESC><ESC>", "<C-\\><C-n>", { desc = "exit terminal mode" })
-
--- New terminal on left side
-vim.keymap.set("n", "<space>st", function()
-	vim.cmd.vnew()
-	vim.cmd.term()
-	vim.cmd.wincmd("H")
-	vim.api.nvim_win_set_width(0, 60)
-end)
-
 vim.opt.wrap = false
 vim.wo.wrap = false
 
@@ -87,9 +62,16 @@ vim.keymap.set("n", "<C-l>", "<C-w><C-l>", { desc = "Move focus to the right win
 vim.keymap.set("n", "<C-j>", "<C-w><C-j>", { desc = "Move focus to the lower window" })
 vim.keymap.set("n", "<C-k>", "<C-w><C-k>", { desc = "Move focus to the upper window" })
 
+vim.keymap.set("n", "<C-d>", "<C-d>zz", { desc = "Move down half page and center" })
+vim.keymap.set("n", "<C-u>", "<C-u>zz", { desc = "Move up half page and center" })
+
 vim.api.nvim_set_keymap("n", "<leader>bd", ":bp|bd #<CR>", { noremap = true, silent = true })
 vim.api.nvim_set_keymap("n", "<leader>bp", ":bp<CR>", { noremap = true, silent = true })
 vim.api.nvim_set_keymap("n", "<leader>bn", ":bn<CR>", { noremap = true, silent = true })
+
+vim.diagnostic.config({
+	virtual_lines = true,
+})
 
 -- [[ Basic Autocommands ]]
 --  See `:help lua-guide-autocommands`
@@ -184,7 +166,8 @@ require("lazy").setup({
 				defaults = {
 					file_ignore_patterns = {
 						"node_modules",
-						"target",
+						".bundle.js",
+						".map",
 					},
 				},
 			})
@@ -232,7 +215,6 @@ require("lazy").setup({
 			-- Useful status updates for LSP.
 			-- NOTE: `opts = {}` is the same as calling `require('fidget').setup({})`
 			-- { "j-hui/fidget.nvim", opts = {} },
-			"rcarriga/nvim-notify",
 
 			-- `neodev` configures Lua LSP for your Neovim config, runtime and plugins
 			-- used for completion, annotations and signatures of Neovim apis
@@ -331,7 +313,7 @@ require("lazy").setup({
 				-- languages here or re-enable it for the disabled ones.
 				local disable_filetypes = { c = true, cpp = true }
 				return {
-					timeout_ms = 500,
+					timeout_ms = 5000,
 					lsp_fallback = not disable_filetypes[vim.bo[bufnr].filetype],
 				}
 			end,
@@ -349,7 +331,6 @@ require("lazy").setup({
 			},
 		},
 	},
-
 	{ -- Autocompletion
 		"hrsh7th/nvim-cmp",
 		event = "InsertEnter",
@@ -459,9 +440,9 @@ require("lazy").setup({
 		priority = 1000,
 		init = function()
 			-- load
-			--	vim.cmd.colorscheme("gruvbox")
-			--	vim.cmd.hi("Comment gui=none")
-			--	vim.cmd.hi("Normal guibg=none")
+			-- vim.cmd.colorscheme("gruvbox")
+			-- vim.cmd.hi("Comment gui=none")
+			-- vim.cmd.hi("Normal guibg=none")
 		end,
 	},
 	{
@@ -470,9 +451,21 @@ require("lazy").setup({
 		priority = 1000,
 		init = function()
 			-- load
-			vim.cmd.colorscheme("rose-pine-moon")
+			--vim.cmd.colorscheme("rose-pine-moon")
+			--vim.cmd.hi("Comment gui=none")
+			--vim.cmd.hi("Normal guibg=none")
+			--vim.cmd.hi("NormalNC guibg=none")
+		end,
+	},
+	{
+		"thesimonho/kanagawa-paper.nvim",
+		priority = 1000,
+		init = function()
+			-- load
+			vim.cmd.colorscheme("kanagawa-paper")
 			vim.cmd.hi("Comment gui=none")
 			vim.cmd.hi("Normal guibg=none")
+			vim.cmd.hi("NormalNC guibg=none")
 		end,
 	},
 	{
@@ -552,6 +545,7 @@ require("lazy").setup({
 		config = function()
 			require("mini.ai").setup({ n_lines = 500 })
 			require("mini.surround").setup()
+			require("mini.notify").setup({ lsp_progress = { enable = true } })
 
 			local statusline = require("mini.statusline")
 			statusline.setup({ use_icons = vim.g.have_nerd_font })
@@ -661,40 +655,6 @@ require("lazy").setup({
 				},
 			})
 			vim.api.nvim_set_keymap("n", "<leader>bv", ":CodeCompanionChat<CR>", { noremap = true, silent = true })
-		end,
-	},
-	{
-		"folke/noice.nvim",
-		event = "VeryLazy",
-		opts = {
-			-- add any options here
-		},
-		dependencies = {
-			-- if you lazy-load any plugin below, make sure to add proper `module="..."` entries
-			"MunifTanjim/nui.nvim",
-			-- OPTIONAL:
-			--   `nvim-notify` is only needed, if you want to use the notification view.
-			--   If not available, we use `mini` as the fallback
-			"rcarriga/nvim-notify",
-		},
-		config = function()
-			require("noice").setup({
-				lsp = {
-					-- override markdown rendering so that **cmp** and other plugins use **Treesitter**
-					override = {
-						["vim.lsp.util.convert_input_to_markdown_lines"] = true,
-						["vim.lsp.util.stylize_markdown"] = true,
-						["cmp.entry.get_documentation"] = true, -- requires hrsh7th/nvim-cmp
-					},
-					presets = {
-						bottom_search = true, -- use a classic bottom cmdline for search
-						command_palette = true, -- position the cmdline and popupmenu together
-						long_message_to_split = true, -- long messages will be sent to a split
-						inc_rename = false, -- enables an input dialog for inc-rename.nvim
-						lsp_doc_border = false, -- add a border to hover docs and signature help
-					},
-				},
-			})
 		end,
 	},
 })
