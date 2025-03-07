@@ -56,12 +56,15 @@ config.font_size = 12
 config.window_background_opacity = 1
 
 config.use_fancy_tab_bar = false
-config.hide_tab_bar_if_only_one_tab = false
 config.tab_bar_at_bottom = false
 config.window_decorations = "INTEGRATED_BUTTONS|RESIZE"
 
 if wezterm.target_triple == "x86_64-pc-windows-msvc" then
+	-- Windows
 	config.default_prog = { "powershell.exe", "-NoLogo" }
+else
+	-- Unix
+	config.hide_tab_bar_if_only_one_tab = true
 end
 
 config.window_padding = {
