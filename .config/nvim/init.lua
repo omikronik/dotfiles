@@ -56,6 +56,9 @@ vim.wo.wrap = false
 vim.opt.hlsearch = true
 vim.keymap.set("n", "<ESC>", "<cmd>nohlsearch<CR>")
 
+-- Change terminal mode exit
+vim.keymap.set("t", "<ESC><ESC>", "<C-\\><C-n>", { desc = "exit terminal mode" })
+
 -- user ctrl+hjkl to move splits
 vim.keymap.set("n", "<C-h>", "<C-w><C-h>", { desc = "Move focus to the left window" })
 vim.keymap.set("n", "<C-l>", "<C-w><C-l>", { desc = "Move focus to the right window" })
@@ -72,6 +75,11 @@ vim.api.nvim_set_keymap("n", "<leader>bn", ":bn<CR>", { noremap = true, silent =
 vim.diagnostic.config({
 	virtual_lines = true,
 })
+
+-- remove background colours and use terminal bg
+vim.cmd.hi("Comment gui=none")
+vim.cmd.hi("Normal guibg=none")
+vim.cmd.hi("NormalNC guibg=none")
 
 -- [[ Basic Autocommands ]]
 --  See `:help lua-guide-autocommands`
@@ -435,14 +443,12 @@ require("lazy").setup({
 			})
 		end,
 	},
-	{ -- colorscheme
+	{
 		"ellisonleao/gruvbox.nvim",
 		priority = 1000,
 		init = function()
 			-- load
 			-- vim.cmd.colorscheme("gruvbox")
-			-- vim.cmd.hi("Comment gui=none")
-			-- vim.cmd.hi("Normal guibg=none")
 		end,
 	},
 	{
@@ -452,9 +458,6 @@ require("lazy").setup({
 		init = function()
 			-- load
 			--vim.cmd.colorscheme("rose-pine-moon")
-			--vim.cmd.hi("Comment gui=none")
-			--vim.cmd.hi("Normal guibg=none")
-			--vim.cmd.hi("NormalNC guibg=none")
 		end,
 	},
 	{
@@ -463,9 +466,6 @@ require("lazy").setup({
 		init = function()
 			-- load
 			vim.cmd.colorscheme("kanagawa-paper")
-			vim.cmd.hi("Comment gui=none")
-			vim.cmd.hi("Normal guibg=none")
-			vim.cmd.hi("NormalNC guibg=none")
 		end,
 	},
 	{
