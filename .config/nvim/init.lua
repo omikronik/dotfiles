@@ -13,6 +13,7 @@ vim.opt.clipboard = "unnamedplus"
 vim.opt.breakindent = true
 
 vim.opt.undofile = true
+vim.opt.swapfile = false
 
 vim.opt.ignorecase = true
 vim.opt.smartcase = true
@@ -32,6 +33,7 @@ vim.opt.listchars = { tab = "| ", trail = "·", nbsp = "␣" }
 vim.opt.inccommand = "split"
 
 vim.opt.scrolloff = 7
+vim.opt.sidescrolloff = 7
 
 local TAB_WIDTH = 4
 local TAB_WIDTH_WEB = 2
@@ -67,13 +69,18 @@ vim.keymap.set("n", "<C-k>", "<C-w><C-k>", { desc = "Move focus to the upper win
 
 vim.keymap.set("n", "<C-d>", "<C-d>zz", { desc = "Move down half page and center" })
 vim.keymap.set("n", "<C-u>", "<C-u>zz", { desc = "Move up half page and center" })
+vim.keymap.set("n", "<S-g>", "<S-g>zz", { desc = "Move to bottom and center view" })
 
+-- move around buffers
 vim.api.nvim_set_keymap("n", "<leader>bd", ":bp|bd #<CR>", { noremap = true, silent = true })
 vim.api.nvim_set_keymap("n", "<leader>bp", ":bp<CR>", { noremap = true, silent = true })
 vim.api.nvim_set_keymap("n", "<leader>bn", ":bn<CR>", { noremap = true, silent = true })
 
+vim.keymap.set("n", "<leader>lf", vim.lsp.buf.format, { desc = "format current buffer" })
+
 vim.diagnostic.config({
-	virtual_lines = true,
+	virtual_text = true,
+	virtual_lines = false,
 })
 
 -- remove background colours and use terminal bg
@@ -104,19 +111,7 @@ vim.opt.rtp:prepend(lazypath)
 
 require("lazy").setup({
 	{ "tpope/vim-sleuth" },
-	{ "numToStr/Comment.nvim", opts = {} },
-	{ -- git gutter signsV
-		"lewis6991/gitsigns.nvim",
-		opts = {
-			signs = {
-				add = { text = "+" },
-				change = { text = "~" },
-				delete = { text = "_" },
-				topdelete = { text = "‾" },
-				changedelete = { text = "~" },
-			},
-		},
-	},
+	{ "lewis6991/gitsigns.nvim" },
 	{
 		"folke/which-key.nvim",
 		event = "VimEnter", -- Sets the loading event to 'VimEnter'
@@ -148,20 +143,14 @@ require("lazy").setup({
 			{ -- If encountering errors, see telescope-fzf-native README for installation instructions
 				"nvim-telescope/telescope-fzf-native.nvim",
 
-				-- `build` is used to run some command when the plugin is installed/updated.
-				-- This is only run then, not every time Neovim starts up.
 				build = "make",
 
-				-- `cond` is a condition used to determine whether this plugin should be
-				-- installed and loaded.
 				cond = function()
 					return vim.fn.executable("make") == 1
 				end,
 			},
+			{ "echasnovski/mini.icons" },
 			{ "nvim-telescope/telescope-ui-select.nvim" },
-
-			-- Useful for getting pretty icons, but requires a Nerd Font.
-			{ "nvim-tree/nvim-web-devicons", enabled = vim.g.have_nerd_font },
 		},
 		config = function()
 			-- [[ Configure telescope ]]
@@ -219,13 +208,6 @@ require("lazy").setup({
 			"williamboman/mason.nvim",
 			"williamboman/mason-lspconfig.nvim",
 			"WhoIsSethDaniel/mason-tool-installer.nvim",
-
-			-- Useful status updates for LSP.
-			-- NOTE: `opts = {}` is the same as calling `require('fidget').setup({})`
-			-- { "j-hui/fidget.nvim", opts = {} },
-
-			-- `neodev` configures Lua LSP for your Neovim config, runtime and plugins
-			-- used for completion, annotations and signatures of Neovim apis
 			{ "folke/neodev.nvim", opts = {} },
 		},
 		config = function()
@@ -270,16 +252,14 @@ require("lazy").setup({
 
 			local servers = {
 				lua_ls = {
-					-- cmd = {...},
-					-- filetypes = { ...},
-					-- capabilities = {},
 					settings = {
 						Lua = {
 							completion = {
 								callSnippet = "Replace",
 							},
-							-- You can toggle below to ignore Lua_LS's noisy `missing-fields` warnings
-							-- diagnostics = { disable = { 'missing-fields' } },
+							diagnosits = {
+								globals = { "vim" },
+							},
 						},
 					},
 				},
@@ -289,11 +269,15 @@ require("lazy").setup({
 			}
 			require("mason").setup()
 
-			-- You can add other tools here that you want Mason to install
-			-- for you, so that they are available from within Neovim.
 			local ensure_installed = vim.tbl_keys(servers or {})
 			vim.list_extend(ensure_installed, {
 				"stylua", -- Used to format Lua code
+				"typescript-language-server",
+				"zls",
+				"rust-analyzer",
+				"stylua",
+				"eslint-lsp",
+				"prettier",
 			})
 			require("mason-tool-installer").setup({ ensure_installed = ensure_installed })
 
@@ -444,23 +428,6 @@ require("lazy").setup({
 		end,
 	},
 	{
-		"ellisonleao/gruvbox.nvim",
-		priority = 1000,
-		init = function()
-			-- load
-			-- vim.cmd.colorscheme("gruvbox")
-		end,
-	},
-	{
-		"rose-pine/neovim",
-		name = "rose-pine",
-		priority = 1000,
-		init = function()
-			-- load
-			--vim.cmd.colorscheme("rose-pine-moon")
-		end,
-	},
-	{
 		"thesimonho/kanagawa-paper.nvim",
 		priority = 1000,
 		init = function()
@@ -479,7 +446,15 @@ require("lazy").setup({
 		"nvim-treesitter/nvim-treesitter",
 		build = ":TSUpdate",
 		opts = {
-			ensure_installed = { "bash", "c", "html", "lua", "markdown", "vim", "vimdoc" },
+			ensure_installed = {
+				"bash",
+				"c",
+				"html",
+				"lua",
+				"markdown",
+				"vim",
+				"vimdoc",
+			},
 			-- Autoinstall languages that are not installed
 			auto_install = true,
 			highlight = {
@@ -504,25 +479,7 @@ require("lazy").setup({
 			--    - Show your current context: https://github.com/nvim-treesitter/nvim-treesitter-context
 			--    - Treesitter + textobjects: https://github.com/nvim-treesitter/nvim-treesitter-textobjects
 		end,
-		ui = {
-			-- If you are using a Nerd Font: set icons to an empty table which will use the
-			-- default lazy.nvim defined Nerd Font icons, otherwise define a unicode icons table
-			icons = vim.g.have_nerd_font and {} or {
-				cmd = "⌘",
-				config = "🛠",
-				event = "📅",
-				ft = "📂",
-				init = "⚙",
-				keys = "🗝",
-				plugin = "🔌",
-				runtime = "💻",
-				require = "🌙",
-				source = "📄",
-				start = "🚀",
-				task = "📌",
-				lazy = "💤 ",
-			},
-		},
+		ui = { icons = {} },
 	},
 	{ -- Add indentation guides even on blank lines
 		"lukas-reineke/indent-blankline.nvim",
@@ -530,9 +487,6 @@ require("lazy").setup({
 		-- See `:help ibl`
 		main = "ibl",
 		opts = {},
-	},
-	{
-		"nvim-tree/nvim-web-devicons",
 	},
 	{
 		"brenoprata10/nvim-highlight-colors",
@@ -546,6 +500,7 @@ require("lazy").setup({
 			require("mini.ai").setup({ n_lines = 500 })
 			require("mini.surround").setup()
 			require("mini.notify").setup({ lsp_progress = { enable = true } })
+			require("mini.icons").setup()
 
 			local statusline = require("mini.statusline")
 			statusline.setup({ use_icons = vim.g.have_nerd_font })
@@ -557,7 +512,7 @@ require("lazy").setup({
 	},
 	{ -- this is poggers
 		"stevearc/oil.nvim",
-		dependencies = { "nvim-tree/nvim-web-devicons" },
+		--dependencies = { "nvim-tree/nvim-web-devicons" },
 		config = function()
 			require("oil").setup({
 				columns = { "icon" },
@@ -615,46 +570,5 @@ require("lazy").setup({
 				desc = "Quickfix List (Trouble)",
 			},
 		},
-	},
-	{ -- required for codecompanion
-		"zbirenbaum/copilot.lua",
-		cmd = "Copilot",
-		build = ":Copilot auth",
-		opts = {
-			suggestion = { enabled = false },
-			panel = {
-				enabled = false,
-				layout = {
-					position = "right",
-					ratio = 0.4,
-				},
-			},
-			filetypes = {
-				markdown = true,
-				help = true,
-			},
-		},
-	},
-	{ -- copilot chat window
-		"olimorris/codecompanion.nvim",
-		dependencies = {
-			"nvim-lua/plenary.nvim",
-			"nvim-treesitter/nvim-treesitter",
-			"hrsh7th/nvim-cmp", -- Optional: For using slash commands and variables in the chat buffer
-			"nvim-telescope/telescope.nvim", -- Optional: For using slash commands
-			{ "MeanderingProgrammer/render-markdown.nvim", ft = { "markdown", "codecompanion" } },
-			{ "stevearc/dressing.nvim", opts = {} }, -- Optional: Improves `vim.ui.select`
-		},
-		config = function()
-			require("codecompanion").setup({
-				adapter = "copilot",
-				display = {
-					chat = {
-						render_headers = false,
-					},
-				},
-			})
-			vim.api.nvim_set_keymap("n", "<leader>bv", ":CodeCompanionChat<CR>", { noremap = true, silent = true })
-		end,
 	},
 })
