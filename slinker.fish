@@ -226,4 +226,9 @@ else
         config.jsonc \
         "$DOTFILES_CONFIG_PATH"waybar/ \
         "$CONFIG_BASE_PATH"waybar/
+
+    create-symlink \
+        style.css \
+        "$DOTFILES_CONFIG_PATH"waybar/ \
+        "$CONFIG_BASE_PATH"waybar/
 end
