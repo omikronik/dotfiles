@@ -494,4 +494,36 @@ require("lazy").setup({
 			indent = { enable = true, disable = { "ruby" } },
 		},
 	},
+	{
+		"zbirenbaum/copilot.lua",
+		enabled = function()
+			return vim.loop.os_uname().sysname == "Windows_NT"
+		end,
+	},
+	{
+		"olimorris/codecompanion.nvim",
+		enabled = function()
+			return vim.loop.os_uname().sysname == "Windows_NT"
+		end,
+		opts = {},
+		config = function()
+			require("codecompanion").setup({
+				strategies = {
+					chat = { adapters = "copilot" },
+					inline = { adapters = "copilot" },
+					cmd = { adapters = "copilot" },
+				},
+			})
+
+			vim.keymap.set("n", "<leader>bv", ":CodeCompanionChat Toggle<CR>", { noremap = true, silent = true })
+		end,
+		dependencies = {
+			"nvim-lua/plenary.nvim",
+			"nvim-treesitter/nvim-treesitter",
+		},
+	},
+	{
+		"MeanderingProgrammer/render-markdown.nvim",
+		ft = { "markdown", "codecompanion" },
+	},
 })
