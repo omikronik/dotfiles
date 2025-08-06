@@ -231,4 +231,14 @@ else
         style.css \
         "$DOTFILES_CONFIG_PATH"waybar/ \
         "$CONFIG_BASE_PATH"waybar/
+
+    create-symlink \
+        style.scss \
+        "$DOTFILES_CONFIG_PATH"wofi/ \
+        "$CONFIG_BASE_PATH"wofi/
+
+    create-symlink \
+        style.css \
+        "$DOTFILES_CONFIG_PATH"wofi/ \
+        "$CONFIG_BASE_PATH"wofi/
 end

@@ -1,0 +1,61 @@
+/* The name of the window itself */
+#window {
+  /* The name of the box that contains everything */
+}
+#window #outer-box {
+  color: #DCD7BA;
+  background: #1F1F28;
+  background-color: #1F1F28;
+  /* The name of the search bar */
+  /* The name of the scrolled window containing all of the entries */
+}
+#window #outer-box #input {
+  color: #DCD7BA;
+  background: #1F1F28;
+  background-color: #1F1F28;
+  border-top: 2px solid #2D4F67;
+  border-right: 2px solid #2D4F67;
+  border-left: 2px solid #2D4F67;
+  border-bottom: none;
+  border-top-right-radius: 0.5rem;
+  border-top-left-radius: 0.5rem;
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+}
+#window #outer-box #scroll {
+  color: #DCD7BA;
+  background: #1F1F28;
+  background-color: #1F1F28;
+  border-right: 2px solid #2D4F67;
+  border-left: 2px solid #2D4F67;
+  border-bottom: 2px solid #2D4F67;
+  border-top: none;
+  border-top-right-radius: 0;
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0.5rem;
+  border-bottom-right-radius: 0.5rem;
+  /* The name of the box containing all of the entries */
+  /* The name of all images in entries displayed in image mode */
+  /* The name of all the text in entries */
+  /* The name of all entries */
+  /* The name of all boxes shown when expanding  */
+  /* entries with multiple actions */
+}
+#window #outer-box #scroll #text {
+  color: #DCD7BA;
+}
+#window #outer-box #scroll #text:selected {
+  color: #252535;
+}
+#window #outer-box #scroll #entry {
+  padding-left: 0.5rem;
+  /* The name of all entries currently selected. */
+  /* The name of all entries currently unselected. */
+}
+#window #outer-box #scroll #entry:selected {
+  color: #252535;
+  background-color: #DCA561;
+  border: none;
+}
+
+/*# sourceMappingURL=style.css.map */
