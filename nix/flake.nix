@@ -17,6 +17,8 @@
 					modules = [
 						./configuration.nix
 						./modules/hyprland.nix
+						./modules/development.nix
+						./modules/programs.nix
 					];
 				};
 			};
