@@ -12,8 +12,8 @@ window#waybar {
 }
 
 .modules-left, .modules-right, .modules-center {
-    border: 2px solid rgba(45, 79, 103, 0.8);
-    border-radius: 0.5rem;
+    border: 1px solid rgba(45, 79, 103, 0.8);
+    border-radius: 1rem;
     background-color: rgba(31, 31, 40, 0.6);
     padding-left: 4;
     padding-right: 4;
@@ -212,7 +212,11 @@ label:focus {
 }
 
 #backlight {
-    background-color: #90b1b1;
+    background-color: transparent;
+}
+
+#backlight:hover {
+    background-color: #223249;
 }
 
 #network {
