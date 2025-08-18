@@ -20,6 +20,8 @@
 						./modules/hyprland.nix
 						./modules/development.nix
 						./modules/programs.nix
+						./modules/gpu.nix
+						./modules/steam.nix
 					];
 				};
 			};
