@@ -1,4 +1,5 @@
-{ config, pkgs, ... }
+# Dev related stuff in here
+{ config, pkgs, ... }:
 
 {
 	programs.git = {

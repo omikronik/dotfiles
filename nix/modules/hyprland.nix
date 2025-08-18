@@ -1,12 +1,12 @@
 # Things related to Hyprland and the desktop experience
-{ config, pkgs, ... }
+{ config, pkgs, ... }:
 
 {
-
 	programs.hyprland = {
 		enable = true;
 		xwayland.enable = true;
 	};
+
 	services.displayManager.sddm = {
 		enable = true;
 		wayland.enable = true;
@@ -18,7 +18,12 @@
 		BROWSER="firefox";
 	};
 
-	environment.sessionVariables.NIXOS_OZONE_WL = "1";
+	environment.sessionVariables = {
+		NIXOS_OZONE_WL = "1";
+		MOZ_ENABLE_WAYLAND = "1";
+		MOZ_WAYLAND_USE_VAAPI = "1";
+		MOZ_USE_XINPUT2 = "1";
+	};
 
 	services.displayManager.defaultSession = "hyprland";
 
@@ -26,7 +31,6 @@
 	services.pipewire = {
 		enable = true;
 		alsa.enable = true;
-		#alsa.support32bit = true;
 		pulse.enable = true;
 	};
 
