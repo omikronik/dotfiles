@@ -75,10 +75,5 @@
 		# Audio
 		pavucontrol
 		pwvucontrol
-
-		# File manager and themes
-		kdePackages.dolphin
-		kdePackages.breeze
-		kdePackages.breeze-icons
 	];
 }

@@ -11,7 +11,7 @@
 			};
 			init.defaultBranch = "main";
 
-			credential.helper = "cache";
+			credential.helper = "store";
 		};
 	};
 
