@@ -26,14 +26,6 @@
 		fzf
 		tmux
 		lazygit
-
-		# Utility
-		wget
-		unar
-		unzip
-		htop
-		btop
-		radeontop
 		git-credential-manager
 
 		# Compilers and whatnot

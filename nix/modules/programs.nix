@@ -9,11 +9,15 @@
 		webcord
 		inputs.zen-browser.packages."${pkgs.system}".default
 		thunderbird
-
-		kdePackages.gwenview
-		kdePackages.dolphin
-		kdePackages.breeze
-		kdePackages.breeze-icons
+		ffmpeg
 		mpv
+		wget
+		unar
+		unzip
+		htop
+		btop
+		radeontop
+		nvtopPackages.amd
+		kitty
 	];
 }

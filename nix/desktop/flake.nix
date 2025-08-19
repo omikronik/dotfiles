@@ -17,11 +17,11 @@
 					specialArgs = { inherit inputs; };
 					modules = [
 						./configuration.nix
-						./modules/hyprland.nix
-						./modules/development.nix
-						./modules/programs.nix
-						./modules/gpu.nix
-						./modules/steam.nix
+						../modules/kde.nix
+						../modules/development.nix
+						../modules/programs.nix
+						../modules/gpu.nix
+						../modules/steam.nix
 					];
 				};
 			};
