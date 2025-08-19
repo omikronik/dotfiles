@@ -12,7 +12,7 @@
 		in
 		{
 			nixosConfigurations = {
-				nixos = nixpkgs.lib.nixosSystem {
+				ryujin = nixpkgs.lib.nixosSystem {
 					inherit system;
 					specialArgs = { inherit inputs; };
 					modules = [

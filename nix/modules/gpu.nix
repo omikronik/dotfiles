@@ -13,5 +13,12 @@
 		mesa
 		mesa-gl-headers
 		vulkan-tools
+		libva
+		libva-utils
+		libvdpau-va-gl
+		amdvlk
+		libGL
+		libGLU
+		libglvnd
 	];
 }
