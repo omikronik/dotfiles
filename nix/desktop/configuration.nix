@@ -49,10 +49,6 @@
   # You can disable this if you're only using the Wayland session.
   services.xserver.enable = false;
 
-  # Enable the KDE Plasma Desktop Environment.
-  services.displayManager.sddm.enable = true;
-  services.desktopManager.plasma6.enable = true;
-
   # Configure keymap in X11
   services.xserver.xkb = {
     layout = "us";
@@ -62,6 +58,7 @@
   # Enable CUPS to print documents.
   services.printing.enable = true;
 
+  # Configure console keymap
   console.keyMap = "us";
 
   # Define a user account. Don't forget to set a password with ‘passwd’.
@@ -70,10 +67,6 @@
     description = "yasir";
     extraGroups = ["networkmanager" "wheel" "video" "audio"];
   };
-
-  # Enable automatic login for the user.
-  services.displayManager.autoLogin.enable = true;
-  services.displayManager.autoLogin.user = "yasir";
 
   # Allow unfree packages
   nixpkgs.config.allowUnfree = true;
@@ -87,12 +80,6 @@
 
   # Enable the OpenSSH daemon.
   services.openssh.enable = true;
-
-  # Open ports in the firewall.
-  # networking.firewall.allowedTCPPorts = [ ... ];
-  # networking.firewall.allowedUDPPorts = [ ... ];
-  # Or disable the firewall altogether.
-  # networking.firewall.enable = false;
 
   # This value determines the NixOS release from which the default
   # settings for stateful data, like file locations and database versions

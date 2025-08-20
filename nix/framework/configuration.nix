@@ -48,12 +48,17 @@
     LC_TIME = "en_IE.UTF-8";
   };
 
+  # Enable the X11 windowing system.
+  # You can disable this if you're only using the Wayland session.
+  services.xserver.enable = false;
+
   # Configure keymap in X11
   services.xserver.xkb = {
     layout = "gb";
     variant = "";
   };
 
+  # Enable CUPS to print documents.
   services.printing.enable = true;
 
   # Configure console keymap
@@ -63,8 +68,7 @@
   users.users.yasir = {
     isNormalUser = true;
     description = "yasir";
-    extraGroups = ["networkmanager" "wheel" "audio"];
-    packages = with pkgs; [];
+    extraGroups = ["networkmanager" "wheel" "video" "audio"];
   };
 
   # Allow unfree packages

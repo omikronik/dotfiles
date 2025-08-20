@@ -26,6 +26,7 @@
           ../modules/programs.nix
           ../modules/gpu.nix
           ../modules/steam.nix
+          ../modules/gaming.nix
         ];
       };
     };
