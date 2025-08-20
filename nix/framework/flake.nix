@@ -12,12 +12,13 @@
 		in
 		{
 			nixosConfigurations = {
-				nixos = nixpkgs.lib.nixosSystem {
+				tora = nixpkgs.lib.nixosSystem {
 					inherit system;
 					specialArgs = { inherit inputs; };
 					modules = [
 						./configuration.nix
 						../modules/hyprland.nix
+						../modules/shared_desktop.nix
 						../modules/development.nix
 						../modules/programs.nix
 						../modules/gpu.nix
