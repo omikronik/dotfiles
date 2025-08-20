@@ -6,14 +6,16 @@
 }: {
   programs.git = {
     enable = true;
+
     config = {
       user = {
         name = "omikronik";
         email = "yasirceltik9@gmail.com";
       };
       init.defaultBranch = "main";
-
       credential.helper = "store";
+      pull.rebase = true;
+      rebase.autoStash = true;
     };
   };
 
