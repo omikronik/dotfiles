@@ -1,24 +1,35 @@
-{ config, pkgs, ... }:
 {
-	boot.initrd.kernelModules = [ "amdgpu" ];
+  config,
+  pkgs,
+  ...
+}: {
+  boot.initrd.kernelModules = ["amdgpu"];
 
-	hardware = {
-		graphics = {
-			enable = true;
-			enable32Bit = true;
-		};
-	};
+  hardware = {
+    graphics = {
+      enable = true;
+      enable32Bit = true;
 
-	environment.systemPackages = with pkgs; [
-		mesa
-		mesa-gl-headers
-		libgbm
-		vulkan-tools
-		libva
-		libva-utils
-		libvdpau-va-gl
-		libGL
-		libGLU
-		libglvnd
-	];
+      extraPackages = with pkgs; [
+        mesa
+        libva
+        libva-utils
+        libvdpau-va-gl
+        libGL
+        libGLU
+        libglvnd
+        libgbm
+      ];
+
+      extraPackages32 = with pkgs.driversi686Linux; [
+        mesa
+      ];
+    };
+  };
+
+  environment.systemPackages = with pkgs; [
+    mesa-gl-headers
+    vulkan-tools
+    mesa-demos
+  ];
 }
