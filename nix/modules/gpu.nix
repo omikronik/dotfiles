@@ -12,8 +12,8 @@
 
       extraPackages = with pkgs; [
         mesa
+        amdvlk
         libva
-        libva-utils
         libvdpau-va-gl
         libGL
         libGLU
@@ -23,6 +23,8 @@
 
       extraPackages32 = with pkgs.driversi686Linux; [
         mesa
+        amdvlk
+        libvdpau-va-gl
       ];
     };
   };
@@ -31,5 +33,6 @@
     mesa-gl-headers
     vulkan-tools
     mesa-demos
+    libva-utils
   ];
 }
