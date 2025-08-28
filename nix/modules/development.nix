@@ -43,13 +43,22 @@
     binutils
     gdb
     linuxHeaders
+    pciutils
+    # JS
     nodejs_24
     bun
+    eslint
+    prettierd
+    # Lua
     lua
+    lua-language-server
+    # Rust
     cargo
     rust-analyzer
     rustc
     rustfmt
-    pciutils
+    # Odin
+    odin
+    ols
   ];
 }

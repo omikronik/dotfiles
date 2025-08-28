@@ -205,16 +205,19 @@ require("lazy").setup({
 	-- LSP time
 	{
 		"neovim/nvim-lspconfig",
-		dependencies = {
-			-- Automatically install LSPs and related tools to stdpath for Neovim
-			{ "mason-org/mason.nvim", opts = {} },
-			"mason-org/mason-lspconfig.nvim",
-			"WhoIsSethDaniel/mason-tool-installer.nvim",
-
-			-- Allows extra capabilities provided by blink.cmp
-			"saghen/blink.cmp",
-		},
+		dependencies = (function()
+			local deps = {"saghen/blink.cmp"}
+			if vim.fn.has("win32") == 1 then
+				vim.list_extend(deps, {
+					{ "mason-org/mason.nvim", opts = {} },
+					"mason-org/mason-lspconfig.nvim",
+					"WhoIsSethDaniel/mason-tool-installer.nvim",
+				})
+			end
+			return deps
+		end)(),
 		config = function()
+			local is_windows = vim.fn.has("win32") == 1
 			-- attach
 			vim.api.nvim_create_autocmd("LspAttach", {
 				group = vim.api.nvim_create_augroup("lsp-attach", { clear = true }),
@@ -270,7 +273,11 @@ require("lazy").setup({
 				eslint = {
 					quiet = true,
 				},
+				ts_ls = {},
+				rust_analyzer = {},
+				ols = {},
 			}
+			if is_windows then
 			require("mason").setup()
 
 			local ensure_installed = vim.tbl_keys(servers or {})
@@ -297,6 +304,12 @@ require("lazy").setup({
 					end,
 				},
 			})
+			else
+				for server_name, server_config in pairs(servers) do
+					server_config.capabilities = vim.tbl_deep_extend("force", {}, capabilities, server_config.capabilities or {})
+					require("lspconfig")[server_name].setup(server_config)
+				end
+			end
 		end,
 	},
 	{ -- Autoformat

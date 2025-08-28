@@ -193,6 +193,11 @@ else
         "$CONFIG_BASE_PATH"nvim/
 
     create-symlink \
+        .luarc.json \
+        "$DOTFILES_CONFIG_PATH"nvim/ \
+        "$CONFIG_BASE_PATH"nvim/
+
+    create-symlink \
         init.lua \
         "$DOTFILES_CONFIG_PATH"nvim/ \
         "$CONFIG_BASE_PATH"nvim/

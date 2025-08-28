@@ -21,6 +21,8 @@
     btop
     radeontop
     nvtopPackages.amd
+    powertop
+    fastfetch
     kitty
   ];
 }
