@@ -68,7 +68,7 @@
   users.users.yasir = {
     isNormalUser = true;
     description = "yasir";
-    extraGroups = ["networkmanager" "wheel" "video" "audio"];
+    extraGroups = ["networkmanager" "wheel" "video" "audio" "gamemode"];
   };
 
   # Allow unfree packages
