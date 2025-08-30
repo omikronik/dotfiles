@@ -24,5 +24,11 @@
     powertop
     fastfetch
     kitty
+
+    libreoffice-qt6-fresh
+    hunspell
+    hunspellDicts.en_GB-ize
+    hunspellDicts.en_GB-large
+    hunspellDicts.en_US-large
   ];
 }
