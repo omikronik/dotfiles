@@ -59,6 +59,7 @@
     gdb
     linuxHeaders
     pciutils
+    jq
     # JS
     nodejs_24
     bun
@@ -75,5 +76,7 @@
     # Odin
     odin
     ols
+    # nix
+    alejandra
   ];
 }
