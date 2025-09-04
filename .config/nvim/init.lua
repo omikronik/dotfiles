@@ -45,7 +45,7 @@ vim.bo.shiftwidth = TAB_WIDTH
 vim.opt.expandtab = true
 
 vim.api.nvim_create_autocmd("FileType", {
-	pattern = { "typescript", "typescriptreact", "javascript", "javascriptreact" },
+	pattern = { "typescript", "typescriptreact", "javascript", "javascriptreact", "odin" },
 	callback = function()
 		vim.bo.shiftwidth = TAB_WIDTH_WEB
 		vim.bo.tabstop = TAB_WIDTH_WEB

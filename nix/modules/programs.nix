@@ -30,5 +30,6 @@
     hunspellDicts.en_GB-ize
     hunspellDicts.en_GB-large
     hunspellDicts.en_US-large
+    blueman
   ];
 }

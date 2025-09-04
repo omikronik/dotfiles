@@ -22,6 +22,21 @@
   programs.fish.enable = true;
   users.users.yasir.shell = pkgs.fish;
 
+  programs.nix-ld = {
+    enable = true;
+    libraries = with pkgs; [
+      stdenv.cc.cc
+      zlib
+      fuse3
+      icu
+      openssl
+      curl
+      wget
+      SDL2
+      sdl3
+    ];
+  };
+
   environment.systemPackages = with pkgs; [
     # THE all time classics
     vim
