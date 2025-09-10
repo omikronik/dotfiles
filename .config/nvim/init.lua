@@ -45,13 +45,23 @@ vim.bo.shiftwidth = TAB_WIDTH
 vim.opt.expandtab = true
 
 vim.api.nvim_create_autocmd("FileType", {
-	pattern = { "typescript", "typescriptreact", "javascript", "javascriptreact", "odin" },
+	pattern = { "typescript", "typescriptreact", "javascript", "javascriptreact" },
 	callback = function()
 		vim.bo.shiftwidth = TAB_WIDTH_WEB
 		vim.bo.tabstop = TAB_WIDTH_WEB
 		vim.bo.softtabstop = TAB_WIDTH_WEB
 		vim.bo.expandtab = true
 	end,
+})
+
+vim.api.nvim_create_autocmd("FileType", {
+  pattern = { "c", "cpp", "odin", "zig", "rust" },
+  callback = function()
+    vim.bo.tabstop = TAB_WIDTH
+    vim.bo.softtabstop = TAB_WIDTH
+    vim.bo.shiftwidth = TAB_WIDTH
+    vim.bo.expandtab = true
+  end,
 })
 
 vim.opt.wrap = false
@@ -345,6 +355,7 @@ require("lazy").setup({
 				typescript = { "prettierd", "prettier", stop_after_first = true },
 				javescriptreact = { "prettierd", "prettier", stop_after_first = true },
 				typescriptreact = { "prettierd", "prettier", stop_after_first = true },
+				markdown = { "prettierd", "prettier", stop_after_first = true },
 			},
 		},
 	},

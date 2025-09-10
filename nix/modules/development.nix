@@ -60,6 +60,11 @@
     linuxHeaders
     pciutils
     jq
+    clang-tools
+    man-pages
+    man-pages-posix
+    valgrind
+    strace
     # JS
     nodejs_24
     bun
@@ -78,5 +83,6 @@
     ols
     # nix
     alejandra
+
   ];
 }
