@@ -24,12 +24,13 @@
     powertop
     fastfetch
     kitty
-
+    zathura
     libreoffice-qt6-fresh
     hunspell
     hunspellDicts.en_GB-ize
     hunspellDicts.en_GB-large
     hunspellDicts.en_US-large
     blueman
+    bambu-studio
   ];
 }
