@@ -64,7 +64,7 @@
     kdePackages.breeze
     kdePackages.breeze-icons
     kdePackages.konsole
-
+    kdePackages.ark
     kdePackages.dolphin
     kdePackages.plasma-workspace
     kdePackages.kio
@@ -77,6 +77,7 @@
     kdePackages.kdegraphics-thumbnailers
     kdePackages.qtsvg
     kdePackages.kservice
+    kdePackages.kolourpaint
     shared-mime-info
   ];
 }

@@ -32,5 +32,6 @@
     hunspellDicts.en_US-large
     blueman
     bambu-studio
+    krita
   ];
 }
