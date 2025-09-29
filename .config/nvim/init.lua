@@ -55,13 +55,13 @@ vim.api.nvim_create_autocmd("FileType", {
 })
 
 vim.api.nvim_create_autocmd("FileType", {
-  pattern = { "c", "cpp", "odin", "zig", "rust" },
-  callback = function()
-    vim.bo.tabstop = TAB_WIDTH
-    vim.bo.softtabstop = TAB_WIDTH
-    vim.bo.shiftwidth = TAB_WIDTH
-    vim.bo.expandtab = true
-  end,
+	pattern = { "c", "cpp", "odin", "zig", "rust" },
+	callback = function()
+		vim.bo.tabstop = TAB_WIDTH
+		vim.bo.softtabstop = TAB_WIDTH
+		vim.bo.shiftwidth = TAB_WIDTH
+		vim.bo.expandtab = true
+	end,
 })
 
 vim.opt.wrap = false
@@ -286,34 +286,44 @@ require("lazy").setup({
 				ts_ls = {},
 				rust_analyzer = {},
 				ols = {},
+				clangd = {
+					cmd = {
+						"clangd",
+						"--clang-tidy",
+						"-j=5",
+						"--malloc-trim",
+					},
+					filetypes = { "c" }, -- "cpp"
+				},
 			}
 			if is_windows then
-			require("mason").setup()
+				require("mason").setup()
 
-			local ensure_installed = vim.tbl_keys(servers or {})
-			vim.list_extend(ensure_installed, {
-				"stylua", -- Used to format Lua code
-				"typescript-language-server",
-				"zls",
-				"rust-analyzer",
-				"stylua",
-				"eslint-lsp",
-				"prettier",
-			})
-			require("mason-tool-installer").setup({ ensure_installed = ensure_installed })
+				local ensure_installed = vim.tbl_keys(servers or {})
+				vim.list_extend(ensure_installed, {
+					"stylua", -- Used to format Lua code
+					"typescript-language-server",
+					"zls",
+					"rust-analyzer",
+					"stylua",
+					"eslint-lsp",
+					"prettier",
+					"clangd",
+				})
+				require("mason-tool-installer").setup({ ensure_installed = ensure_installed })
 
-			require("mason-lspconfig").setup({
-				handlers = {
-					function(server_name)
-						local server = servers[server_name] or {}
-						-- This handles overriding only values explicitly passed
-						-- by the server configuration above. Useful when disabling
-						-- certain features of an LSP (for example, turning off formatting for tsserver)
-						server.capabilities = vim.tbl_deep_extend("force", {}, capabilities, server.capabilities or {})
-						require("lspconfig")[server_name].setup(server)
-					end,
-				},
-			})
+				require("mason-lspconfig").setup({
+					handlers = {
+						function(server_name)
+							local server = servers[server_name] or {}
+							-- This handles overriding only values explicitly passed
+							-- by the server configuration above. Useful when disabling
+							-- certain features of an LSP (for example, turning off formatting for tsserver)
+							server.capabilities = vim.tbl_deep_extend("force", {}, capabilities, server.capabilities or {})
+							require("lspconfig")[server_name].setup(server)
+						end,
+					},
+				})
 			else
 				for server_name, server_config in pairs(servers) do
 					server_config.capabilities = vim.tbl_deep_extend("force", {}, capabilities, server_config.capabilities or {})
