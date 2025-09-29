@@ -70,6 +70,7 @@
     bun
     eslint
     prettierd
+    sass
     # Lua
     lua
     lua-language-server

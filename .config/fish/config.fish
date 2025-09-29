@@ -6,6 +6,10 @@ function hconf
     nvim ~/.config/hypr/hyprland.conf
 end
 
+function nv
+    nvim
+end
+
 function nconf
     nvim ~/.config/nvim/init.lua
 end
