@@ -83,6 +83,7 @@
     ols
     # nix
     alejandra
-
+    # java
+    jdk21
   ];
 }

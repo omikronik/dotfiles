@@ -33,5 +33,6 @@
     blueman
     bambu-studio
     krita
+    prismlauncher
   ];
 }
