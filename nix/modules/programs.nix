@@ -34,5 +34,6 @@
     bambu-studio
     krita
     prismlauncher
+    pandoc
   ];
 }

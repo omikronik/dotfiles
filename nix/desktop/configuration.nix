@@ -19,12 +19,16 @@
   boot.kernelPackages = pkgs.linuxPackages_latest;
 
   networking.hostName = "ryujin"; # Define your hostname.
-  # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
 
   nix.settings.experimental-features = ["nix-command" "flakes"];
 
   # Enable networking
   networking.networkmanager.enable = true;
+  networking.networkmanager.wifi.powersave = false;
+
+  boot.extraModprobeConfig = ''
+    options mt7921e power_save=0
+  '';
 
   # Set your time zone.
   time.timeZone = "Europe/Dublin";

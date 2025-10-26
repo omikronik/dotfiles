@@ -246,4 +246,9 @@ else
         style.css \
         "$DOTFILES_CONFIG_PATH"wofi/ \
         "$CONFIG_BASE_PATH"wofi/
+
+    create-symlink \
+        zathurarc \
+        "$DOTFILES_CONFIG_PATH"zathura/ \
+        "$CONFIG_BASE_PATH"zathura/
 end
