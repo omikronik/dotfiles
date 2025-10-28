@@ -25,6 +25,7 @@
     power-profiles-daemon
     brightnessctl
     uwsm
+    udiskie
 
     # Audio
     pavucontrol
