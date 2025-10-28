@@ -1,5 +1,6 @@
 { config, pkgs, ... }:
 let
+  grep = pkgs.gnugrep;
   desiredFlatpaks = [
     "com.bambulab.BambuStudio"
   ];
