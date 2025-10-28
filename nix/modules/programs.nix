@@ -31,7 +31,6 @@
     hunspellDicts.en_GB-large
     hunspellDicts.en_US-large
     blueman
-    bambu-studio
     krita
     prismlauncher
     pandoc
