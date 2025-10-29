@@ -34,5 +34,8 @@
     krita
     prismlauncher
     pandoc
+    texlive.combined.scheme-full
+    gnuplot
+    fontconfig
   ];
 }
