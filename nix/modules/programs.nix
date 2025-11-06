@@ -37,5 +37,7 @@
     texlive.combined.scheme-full
     gnuplot
     fontconfig
+    ani-cli
+    qbittorrent
   ];
 }
