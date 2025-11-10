@@ -9,4 +9,4 @@ if test $UPDATE = true
     nix flake update --flake /home/yasir/dotfiles/nix/framework/
 end
 
-sudo nixos-rebuild switch --flake /home/yasir/dotfiles/nix/framework/
+sudo nixos-rebuild switch --flake /home/yasir/dotfiles/nix/framework/.#tora
