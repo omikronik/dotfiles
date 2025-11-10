@@ -23,8 +23,11 @@
   nix.settings.experimental-features = ["nix-command" "flakes"];
 
   # Enable networking
-  networking.networkmanager.enable = true;
-  networking.networkmanager.wifi.powersave = false;
+  networking.networkmanager = {
+    enable = true;
+    wifi.backend = "iwd";
+    wifi.powersave = false;
+  };
 
   boot.extraModprobeConfig = ''
     options mt7921e power_save=0
