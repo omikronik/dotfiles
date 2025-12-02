@@ -28,6 +28,7 @@
           ../modules/steam.nix
           ../modules/gaming.nix
           ../modules/flatpak.nix
+          ../modules/vr.nix
         ];
       };
     };

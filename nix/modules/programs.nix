@@ -34,11 +34,12 @@
     krita
     prismlauncher
     pandoc
-    texlive.combined.scheme-small
+    texlive.combined.scheme-full
     gnuplot
     fontconfig
     ani-cli
     qbittorrent
     calibre
+    lm_sensors
   ];
 }
