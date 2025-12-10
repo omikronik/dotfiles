@@ -85,5 +85,7 @@
     alejandra
     # java
     jdk21
+    # python
+    python3
   ];
 }
