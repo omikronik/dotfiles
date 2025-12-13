@@ -97,5 +97,8 @@
     jdk21
     # python
     python3
+    # zig
+    zig
+    zls
   ];
 }

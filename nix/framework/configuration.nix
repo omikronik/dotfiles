@@ -29,7 +29,7 @@
   # Enable networking
   networking.networkmanager = {
     enable = true;
-    wifi.backend = "iwd";
+    wifi.backend = "wpa_supplicant";
   };
 
   # Set your time zone.
