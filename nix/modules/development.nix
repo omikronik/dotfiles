@@ -34,6 +34,16 @@
       wget
       SDL2
       sdl3
+      
+      wayland
+      wayland-protocols
+      libxkbcommon
+      libGL
+      vulkan-loader
+      libva
+      libvdpau
+      libdrm
+      pipewire
     ];
   };
 
