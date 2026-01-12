@@ -100,5 +100,7 @@
     # zig
     zig
     zls
+
+    usbutils
   ];
 }

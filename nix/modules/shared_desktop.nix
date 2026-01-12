@@ -78,6 +78,7 @@
     kdePackages.qtsvg
     kdePackages.kservice
     kdePackages.kolourpaint
+    kdePackages.partitionmanager
     shared-mime-info
   ];
 }

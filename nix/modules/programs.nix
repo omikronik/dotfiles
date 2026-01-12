@@ -41,5 +41,6 @@
     qbittorrent
     calibre
     lm_sensors
+    freecad
   ];
 }
