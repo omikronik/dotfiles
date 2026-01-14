@@ -251,4 +251,14 @@ else
         zathurarc \
         "$DOTFILES_CONFIG_PATH"zathura/ \
         "$CONFIG_BASE_PATH"zathura/
+
+    create-symlink \
+        toggle-laptop-kb.fish \
+        "$DOTFILES_PATH" \
+        "$CONFIG_BASE_PATH"hypr/scripts/
+
+    create-symlink \
+        waybar-kb-status.fish \
+        "$DOTFILES_PATH" \
+        "$CONFIG_BASE_PATH"waybar/scripts/
 end

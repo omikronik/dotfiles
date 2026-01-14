@@ -2,12 +2,13 @@
 {
     // "layer": "top", // Waybar at top layer
     // "position": "bottom", // Waybar position (top|bottom|left|right)
-    "height": 20, // Waybar height (to be removed for auto height)
+    "height": 24, // Waybar height (to be removed for auto height)
     "spacing": 4,
     "margin": "0 1 0 1",
     "modules-left": [
         "tray",
         "clock",
+        "custom/laptop-kb"
     ],
     "modules-center": [
         "hyprland/workspaces",
@@ -192,5 +193,14 @@
             "suspend": "systemctl suspend",
             "hibernate": "systemctl hibernate"
         }
+    },
+    "custom/laptop-kb": {
+        "format": "⌨️ {}",
+        "exec": "~/.config/waybar/scripts/waybar-kb-status.fish",
+        "on-click": "~/.config/hypr/scripts/toggle-laptop-kb.fish && pkill -RTMIN+8 waybar",
+        "interval": "once",
+        "signal": 8,
+        "tooltip": true,
+        "tooltip-format": "Click to toggle laptop keyboard"
     }
 }
