@@ -1,0 +1,6 @@
+[global]
+        corner_radius = 10
+        frame_width = 1
+        frame_color = "#C34043"
+        background = "#252535"
+        foreground = "#DCD7BA"

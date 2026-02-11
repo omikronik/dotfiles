@@ -1,0 +1,4 @@
+singleton Theme 1.0 Theme.qml
+MiniCalendar 1.0 MiniCalendar.qml
+ClickableItem 1.0 ClickableItem.qml
+PopupMenu 1.0 PopupMenu.qml

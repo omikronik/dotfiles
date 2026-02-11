@@ -221,6 +221,11 @@ else
         hyprland.conf \
         "$DOTFILES_CONFIG_PATH"hypr/ \
         "$CONFIG_BASE_PATH"hypr/
+
+    create-symlink \
+        hyprlock.conf \
+        "$DOTFILES_CONFIG_PATH"hypr/ \
+        "$CONFIG_BASE_PATH"hypr/
     
     create-symlink \
         hyprpaper.conf \
@@ -261,4 +266,9 @@ else
         waybar-kb-status.fish \
         "$DOTFILES_PATH" \
         "$CONFIG_BASE_PATH"waybar/scripts/
+
+    create-symlink \
+        dunstrc \
+        "$DOTFILES_CONFIG_PATH"/dunst/ \
+        "$CONFIG_BASE_PATH"dunst/
 end

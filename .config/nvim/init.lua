@@ -295,6 +295,7 @@ require("lazy").setup({
 					},
 					filetypes = { "c" }, -- "cpp"
 				},
+				qmlls = {},
 			}
 			if is_windows then
 				require("mason").setup()
@@ -504,31 +505,10 @@ require("lazy").setup({
 			{ "<leader>xQ", "<cmd>Trouble qflist toggle<cr>", desc = "Quickfix List (Trouble)" },
 		},
 	},
-	{
-		"nvim-treesitter/nvim-treesitter",
-		build = ":TSUpdate",
-		main = "nvim-treesitter.configs",
-		opts = {
-			ensure_installed = {
-				"bash",
-				"c",
-				"diff",
-				"html",
-				"lua",
-				"luadoc",
-				"markdown",
-				"markdown_inline",
-				"query",
-				"vim",
-				"vimdoc",
-			},
-			auto_install = true,
-			highlight = {
-				enable = true,
-				additional_vim_regex_highlighting = { "ruby" },
-			},
-			indent = { enable = true, disable = { "ruby" } },
-		},
+	{ -- Highlight, edit, and navigate code
+		'nvim-treesitter/nvim-treesitter',
+		lazy = false,
+		build = ':TSUpdate',
 	},
 	{
 		"zbirenbaum/copilot.lua",
@@ -562,4 +542,11 @@ require("lazy").setup({
 		"MeanderingProgrammer/render-markdown.nvim",
 		ft = { "markdown", "codecompanion" },
 	},
+	{
+		'nvim-java/nvim-java',
+		config = function()
+			require('java').setup()
+			vim.lsp.enable('jdtls')
+		end,
+	}
 })

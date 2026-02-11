@@ -17,3 +17,5 @@ end
 function ll
 ls -la
 end
+
+eval (keychain --eval --quiet --agents ssh ~/.ssh/id_ed25519)

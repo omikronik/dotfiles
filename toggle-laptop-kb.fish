@@ -1,16 +1,27 @@
 #!/usr/bin/env fish
 
-set LAPTOP_KB "at-translated-set-2-keyboard"
-set STATUS_FILE "/tmp/laptop-kb-disabled"
+set -x STATUS_FILE "$XDG_RUNTIME_DIR/keyboard.status"
 
-if test -f $STATUS_FILE
-    # enable it
-    hyprctl keyword "device:$LAPTOP_KB:enabled" true
-    rm $STATUS_FILE
-    notify-send "Laptop Keyboard" "enabled" -t 2000
+
+function enable_keyboard
+    printf "true" >$STATUS_FILE
+    notify-send "Built-in Keyboard" "Enabling Keyboard"
+    hyprctl keyword '$LAPTOP_KB_ENABLED' "true" -r
+end
+
+function disable_keyboard
+    printf "false" >$STATUS_FILE
+    notify-send "Built-in Keyboard" "Disabling Keyboard"
+    hyprctl keyword '$LAPTOP_KB_ENABLED' "false" -r
+end
+
+if not test -f $STATUS_FILE
+    enable_keyboard
 else
-    # disable it
-    hyprctl keyword "device:$LAPTOP_KB:enabled" false
-    touch $STATUS_FILE
-    notify-send "Laptop Keyboard" "disabled" -t 2000
+    set kb_status (cat $STATUS_FILE)
+    if test $kb_status = "true"
+        disable_keyboard
+    else if test $kb_status = "false"
+        enable_keyboard
+    end
 end
