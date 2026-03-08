@@ -88,9 +88,6 @@
     rust-analyzer
     rustc
     rustfmt
-    # Odin
-    odin
-    ols
     # nix
     alejandra
     # java

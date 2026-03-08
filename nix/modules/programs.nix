@@ -34,7 +34,7 @@
     krita
     prismlauncher
     pandoc
-    texlive.combined.scheme-full
+    typst
     gnuplot
     fontconfig
     ani-cli
