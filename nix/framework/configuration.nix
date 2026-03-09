@@ -18,6 +18,9 @@
   # Use latest kernel.
   boot.kernelPackages = pkgs.linuxPackages_latest;
 
+  boot.resumeDevice = "/dev/disk/by-uuid/7a2c86e1-eaba-4f07-a7d8-3bf74a7562c9";
+  boot.kernelParams = [ "resume=/dev/disk/by-uuid/7a2c86e1-eaba-4f07-a7d8-3bf74a7562c9" ];
+
   networking.hostName = "tora"; # Define your hostname.
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
 
