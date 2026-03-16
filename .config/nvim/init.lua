@@ -512,15 +512,20 @@ require("lazy").setup({
 	},
 	{
 		"zbirenbaum/copilot.lua",
-		enabled = function()
-			return vim.loop.os_uname().sysname == "Windows_NT"
+		--enabled = function()
+		--	return vim.loop.os_uname().sysname == "Windows_NT"
+		--end,
+		cmd = "Copilot",
+		event = "InsertEnter",
+		config = function()
+			require("copilot").setup({})
 		end,
 	},
 	{
 		"olimorris/codecompanion.nvim",
-		enabled = function()
-			return vim.loop.os_uname().sysname == "Windows_NT"
-		end,
+		--enabled = function()
+		--	return vim.loop.os_uname().sysname == "Windows_NT"
+		--end,
 		opts = {},
 		config = function()
 			require("codecompanion").setup({
