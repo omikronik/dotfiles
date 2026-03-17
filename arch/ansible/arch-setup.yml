@@ -1,3 +1,90 @@
 ---
 - name: configure packages
   hosts: local
+  become: false
+  vars:
+    yay_repo: "https://github.com/Jguer/yay.git"
+    yay_build_dir: "/tmp/yay"
+    packagelist_path: "{{ playbook_dir }}/../../packagelist.txt"
+
+  tasks:
+    - name: Ensure dependencies for building AUR packages are installed
+      become: true
+      ansible.builtin.pacman:
+        name:
+          - base-devel
+          - git
+        state: present
+        update_cache: true
+
+    - name: Check whether yay is installed
+      ansible.builtin.command: yay --version
+      register: yay_version
+      changed_when: false
+      failed_when: false
+      become: false
+
+    - name: Remove any previous yay build directory
+      ansible.builtin.file:
+        path: "{{ yay_build_dir }}"
+        state: absent
+      when: yay_version.rc != 0
+
+    - name: Clone yay from upstream
+      ansible.builtin.git:
+        repo: "{{ yay_repo }}"
+        dest: "{{ yay_build_dir }}"
+        version: master
+      when: yay_version.rc != 0
+      become: false
+
+    - name: Build and install yay (makepkg must not run as root)
+      ansible.builtin.command: makepkg -si --noconfirm
+      args:
+        chdir: "{{ yay_build_dir }}"
+      when: yay_version.rc != 0
+      become: false
+
+    - name: System update via yay
+      ansible.builtin.command: yay -Syu --noconfirm
+      become: false
+
+    - name: Ensure packagelist.txt exists
+      ansible.builtin.file:
+        path: "{{ packagelist_path }}"
+        state: touch
+      become: false
+
+    - name: Read desired package list (ignoring blanks and comments)
+      ansible.builtin.slurp:
+        src: "{{ packagelist_path }}"
+      register: packagelist_file
+      become: false
+
+    - name: Parse package list into array
+      ansible.builtin.set_fact:
+        packagelist: >-
+          {{
+            (packagelist_file.content | b64decode).splitlines()
+            | map('trim')
+            | reject('equalto', '')
+            | reject('match', '^(#|;)')
+            | list
+          }}
+
+    - name: Install packages from packagelist.txt via yay (repo + AUR)
+      ansible.builtin.command: yay -S --needed --noconfirm {{ packagelist | join(' ') }}
+      when: packagelist | length > 0
+      become: false
+
+    # Optional: export installed packages back to packagelist.txt
+    # This will overwrite your curated list with "everything installed".
+    # Consider running with --tags export when you actually want it.
+    - name: Export installed packages to packagelist.txt (pacman -Qqe)
+      ansible.builtin.shell: |
+        set -euo pipefail
+        pacman -Qqe | sort -u > "{{ packagelist_path }}"
+      args:
+        executable: /bin/bash
+      become: false
+      tags: [export]
