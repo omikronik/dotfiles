@@ -1,0 +1,11 @@
+---
+- name: Homelab setup (ege + marmara)
+  hosts: homelab
+  become: true
+  tasks:
+    - name: Ping hosts (connectivity test)
+      ansible.builtin.ping:
+
+    - name: Show basic host info
+      ansible.builtin.debug:
+        msg: "Connected to {{ inventory_hostname }} ({{ ansible_host | default(inventory_hostname) }}) as {{ ansible_facts['user_id'] }}"

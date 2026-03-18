@@ -18,4 +18,19 @@ function ll
 ls -la
 end
 
-eval (keychain --eval --quiet --agents ssh ~/.ssh/id_ed25519)
+set -gx SSH_AUTH_SOCK $XDG_RUNTIME_DIR/ssh-agent.socket
+
+if status is-interactive
+    if test -S "$SSH_AUTH_SOCK"
+        # If agent is reachable, only add keys if they aren't already loaded
+        ssh-add -l >/dev/null 2>&1
+        if test $status -eq 0
+            switch $hostname
+                case tora
+                    ssh-add -q ~/.ssh/id_ed25519_tora 2>/dev/null
+                case '*'
+                    ssh-add -q ~/.ssh/id_ed25519 2>/dev/null
+            end
+        end
+    end
+end
