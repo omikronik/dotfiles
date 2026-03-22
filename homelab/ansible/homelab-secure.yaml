@@ -1,0 +1,176 @@
+---
+- name: Security baseline (Ubuntu/Debian) - LAN-only SSH, edge allows 80/443
+  hosts: homelab
+  become: true
+  gather_facts: true
+  serial: 1
+
+  vars:
+    # SSH
+    ssh_port: 22
+
+    # Management LAN subnet that is allowed to SSH to the servers
+    # Change this if your server subnet differs.
+    lan_cidr: "192.168.1.0/24"
+
+    # Edge host behavior
+    edge_allow_http_https: true
+
+    # If you later want SSH reachable from WAN on the edge box, set this true.
+    # Recommended: keep false and use LAN/VPN only.
+    edge_allow_ssh_from_wan: false
+
+  handlers:
+    - name: restart ssh
+      ansible.builtin.service:
+        name: ssh
+        state: restarted
+
+    - name: restart fail2ban
+      ansible.builtin.service:
+        name: fail2ban
+        state: restarted
+
+  tasks:
+    - name: Install security packages
+      ansible.builtin.apt:
+        name:
+          - ufw
+          - fail2ban
+          - unattended-upgrades
+        state: present
+        update_cache: true
+
+    # --------------------
+    # Set up AppArmor
+    # --------------------
+    - name: Install AppArmor packages
+      ansible.builtin.apt:
+        name:
+          - apparmor
+          - apparmor-utils
+        state: present
+
+    - name: Ensure AppArmor service is enabled and running
+      ansible.builtin.service:
+        name: apparmor
+        state: started
+        enabled: true
+
+    # --------------------
+    # Unattended upgrades (security updates)
+    # --------------------
+    - name: Enable periodic apt update + unattended upgrades
+      ansible.builtin.copy:
+        dest: /etc/apt/apt.conf.d/20auto-upgrades
+        owner: root
+        group: root
+        mode: "0644"
+        content: |
+          APT::Periodic::Update-Package-Lists "1";
+          APT::Periodic::Unattended-Upgrade "1";
+
+    - name: Ensure unattended-upgrades service is enabled and started (if present)
+      ansible.builtin.service:
+        name: unattended-upgrades
+        state: started
+        enabled: true
+      failed_when: false
+
+    # --------------------
+    # Fail2ban (basic sshd jail)
+    # --------------------
+    - name: Configure fail2ban jail for sshd
+      ansible.builtin.copy:
+        dest: /etc/fail2ban/jail.d/sshd.local
+        owner: root
+        group: root
+        mode: "0644"
+        content: |
+          [sshd]
+          enabled = true
+          port = {{ ssh_port }}
+          maxretry = 5
+          findtime = 10m
+          bantime = 1h
+      notify: restart fail2ban
+
+    - name: Enable and start fail2ban
+      ansible.builtin.service:
+        name: fail2ban
+        state: started
+        enabled: true
+
+    # --------------------
+    # SSH hardening (recovery-friendly: keep passwords enabled, rely on LAN-only firewall)
+    # --------------------
+    - name: Disallow SSH root login
+      ansible.builtin.lineinfile:
+        path: /etc/ssh/sshd_config
+        regexp: '^#?PermitRootLogin\s+'
+        line: 'PermitRootLogin no'
+        validate: 'sshd -t -f %s'
+      notify: restart ssh
+
+    - name: Keep SSH password authentication enabled (LAN-only policy via UFW)
+      ansible.builtin.lineinfile:
+        path: /etc/ssh/sshd_config
+        regexp: '^#?PasswordAuthentication\s+'
+        line: 'PasswordAuthentication yes'
+        validate: 'sshd -t -f %s'
+      notify: restart ssh
+
+    - name: Ensure SSH public key authentication is enabled
+      ansible.builtin.lineinfile:
+        path: /etc/ssh/sshd_config
+        regexp: '^#?PubkeyAuthentication\s+'
+        line: 'PubkeyAuthentication yes'
+        validate: 'sshd -t -f %s'
+      notify: restart ssh
+
+    # --------------------
+    # UFW firewall (lockout-safe ordering)
+    # --------------------
+    - name: Reset UFW (safe baseline)
+      ansible.builtin.command: ufw --force reset
+      changed_when: true
+
+    - name: Default deny incoming
+      ansible.builtin.command: ufw default deny incoming
+      changed_when: true
+
+    - name: Default allow outgoing
+      ansible.builtin.command: ufw default allow outgoing
+      changed_when: true
+
+    - name: Allow SSH from LAN only
+      ansible.builtin.command: ufw allow from {{ lan_cidr }} to any port {{ ssh_port }} proto tcp
+      changed_when: true
+
+    - name: Allow SSH from anywhere on edge (optional)
+      ansible.builtin.command: ufw allow {{ ssh_port }}/tcp
+      when:
+        - inventory_hostname in groups['edge']
+        - edge_allow_ssh_from_wan | bool
+      changed_when: true
+
+    - name: Allow HTTP/HTTPS on edge (optional)
+      ansible.builtin.command: ufw allow {{ item }}/tcp
+      loop: [80, 443]
+      when:
+        - inventory_hostname in groups['edge']
+        - edge_allow_http_https | bool
+      changed_when: true
+
+    - name: Enable UFW
+      ansible.builtin.command: ufw --force enable
+      changed_when: true
+
+    - name: Show UFW status
+      ansible.builtin.command: ufw status verbose
+      register: ufw_status
+      changed_when: false
+
+    - name: Print UFW status
+      ansible.builtin.debug:
+        var: ufw_status.stdout_lines

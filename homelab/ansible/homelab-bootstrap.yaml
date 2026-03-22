@@ -1,0 +1,97 @@
+---
+- name: Bootstrap / preflight checks (no lockout changes)
+  hosts: homelab
+  gather_facts: true
+  become: true
+  serial: 1
+
+  vars:
+    expected_distros:
+      - Ubuntu
+      - Debian
+
+  pre_tasks:
+    - name: Show connection info (facts-safe)
+      ansible.builtin.debug:
+        msg: >-
+          Connected to {{ inventory_hostname }}
+          ({{ ansible_host | default(inventory_hostname) }})
+          remote_user={{ ansible_facts['user_id'] }}
+          distro={{ ansible_facts['distribution'] }} {{ ansible_facts['distribution_version'] }}
+
+    - name: Assert we are on a supported distro
+      ansible.builtin.assert:
+        that:
+          - ansible_facts['distribution'] in expected_distros
+        fail_msg: >-
+          Unsupported distro: {{ ansible_facts['distribution'] }}.
+          Expected one of: {{ expected_distros | join(', ') }}
+
+    - name: Verify we can become root (sudo works)
+      ansible.builtin.command: id -u
+      register: id_u
+      changed_when: false
+
+    - name: Assert become worked (id -u == 0)
+      ansible.builtin.assert:
+        that:
+          - id_u.stdout == "0"
+        fail_msg: "Become failed; sudo password/vault or sudo permissions are not working."
+
+    - name: Check that Python is available (Ansible needs it)
+      ansible.builtin.command: python3 -V
+      register: pyver
+      changed_when: false
+      failed_when: false
+
+    - name: Show python version used on remote (if present)
+      ansible.builtin.debug:
+        msg: "Remote python: {{ pyver.stdout | default('python3 not found yet') }}"
+
+  tasks:
+    - name: Install base packages (editors + python + tooling)
+      ansible.builtin.apt:
+        name:
+          # editors
+          - vim
+          - neovim
+
+          # python runtime (what Ansible uses)
+          - python3
+          - python3-apt
+          - python3-pip
+
+          # common OS tooling
+          - sudo
+          - ca-certificates
+          - curl
+          - git
+          - rsync
+        state: present
+        update_cache: true
+
+    - name: Re-check python version after install
+      ansible.builtin.command: python3 -V
+      register: pyver2
+      changed_when: false
+
+    - name: Show python version used on remote (post-install)
+      ansible.builtin.debug:
+        msg: "Remote python (post-install): {{ pyver2.stdout }}"
+
+    - name: Create standard directories for homelab services
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+        owner: root
+        group: root
+        mode: "0755"
+      loop:
+        - /opt/compose
+        - /srv
+        - /srv/config
+        - /srv/data
+
+    - name: Check SSHD config validates (does not change it)
+      ansible.builtin.command: sshd -t
+      changed_when: false
