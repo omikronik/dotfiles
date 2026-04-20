@@ -10,7 +10,7 @@
 
 	environment.systemPackages = with pkgs; [
 		winetricks
-		wineWowPackages.waylandFull
+		wineWow64Packages.waylandFull
 		lutris
 
 		dxvk
