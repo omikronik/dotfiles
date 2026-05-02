@@ -4,6 +4,7 @@
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     zen-browser.url = "github:0xc000022070/zen-browser-flake";
+    claude-code.url = "github:sadjow/claude-code-nix";
   };
 
   outputs = {
@@ -29,6 +30,7 @@
           ../modules/gaming.nix
           ../modules/flatpak.nix
           ../modules/qmk.nix
+          ../modules/claude-code.nix
         ];
       };
     };
