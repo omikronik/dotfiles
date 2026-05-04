@@ -505,12 +505,12 @@ require("lazy").setup({
 			{ "<leader>xQ", "<cmd>Trouble qflist toggle<cr>", desc = "Quickfix List (Trouble)" },
 		},
 	},
+	--[[{
 	{ -- Highlight, edit, and navigate code
 		'nvim-treesitter/nvim-treesitter',
 		lazy = false,
 		build = ':TSUpdate',
 	},
-	{
 		"zbirenbaum/copilot.lua",
 		--enabled = function()
 		--	return vim.loop.os_uname().sysname == "Windows_NT"
@@ -542,7 +542,7 @@ require("lazy").setup({
 			"nvim-lua/plenary.nvim",
 			"nvim-treesitter/nvim-treesitter",
 		},
-	},
+	},]]
 	{
 		"MeanderingProgrammer/render-markdown.nvim",
 		ft = { "markdown", "codecompanion" },

@@ -42,5 +42,6 @@
     calibre
     lm_sensors
     freecad
+    obsidian
   ];
 }

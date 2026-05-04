@@ -2,6 +2,10 @@ if status is-interactive
     # Commands to run in interactive sessions can go here
 end
 
+if test -f ~/anthropic_api_key
+    set -gx ANTHROPIC_API_KEY (string trim (cat ~/anthropic_api_key))
+end
+
 function hconf
     nvim ~/.config/hypr/hyprland.conf
 end
