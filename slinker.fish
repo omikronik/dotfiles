@@ -218,7 +218,7 @@ else
         "$CONFIG_BASE_PATH"fish/
 
     create-symlink \
-        hyprland.conf \
+        hyprland.lua \
         "$DOTFILES_CONFIG_PATH"hypr/ \
         "$CONFIG_BASE_PATH"hypr/
 
