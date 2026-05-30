@@ -99,5 +99,7 @@
     zls
 
     usbutils
+
+    vscode-fhs
   ];
 }
