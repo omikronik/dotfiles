@@ -5,12 +5,14 @@
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     zen-browser.url = "github:0xc000022070/zen-browser-flake";
     claude-code.url = "github:sadjow/claude-code-nix";
+    claude-desktop.url = "github:aaddrick/claude-desktop-debian";
   };
 
   outputs = {
     self,
     nixpkgs,
     zen-browser,
+    claude-desktop,
     ...
   } @ inputs: let
     system = "x86_64-linux";

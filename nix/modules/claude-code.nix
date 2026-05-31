@@ -12,7 +12,6 @@
 
   environment.systemPackages = with pkgs; [
     claude-code  # native binary (default, ~180MB self-contained)
-    # claude-code-node  # alternative: Node.js 22 runtime
-    # claude-code-bun   # alternative: Bun runtime
+    claude-desktop
   ];
 }
