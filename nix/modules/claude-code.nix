@@ -1,8 +1,13 @@
 {
-  config,
+  inputs,
   pkgs,
   ...
 }: {
+  nixpkgs.overlays = [
+    inputs.claude-desktop.overlays.default
+    inputs.claude-code.overlays.default
+  ];
+
   nix.settings = {
     substituters = [ "https://claude-code.cachix.org" ];
     trusted-public-keys = [
