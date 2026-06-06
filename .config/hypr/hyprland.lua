@@ -219,7 +219,13 @@ hl.config({
     },
 })
 
+local _kb_status_path = (os.getenv("XDG_RUNTIME_DIR") or "/tmp") .. "/keyboard.status"
+local _kb_status_file = io.open(_kb_status_path, "r")
 local LAPTOP_KB_ENABLED = true
+if _kb_status_file then
+    LAPTOP_KB_ENABLED = _kb_status_file:read("*a") ~= "false"
+    _kb_status_file:close()
+end
 
 hl.gesture({
     fingers = 3,

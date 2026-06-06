@@ -6,13 +6,15 @@ set -x STATUS_FILE "$XDG_RUNTIME_DIR/keyboard.status"
 function enable_keyboard
     printf "true" >$STATUS_FILE
     notify-send "Built-in Keyboard" "Enabling Keyboard"
-    hyprctl keyword '$LAPTOP_KB_ENABLED' "true" -r
+    hyprctl eval "hl.device({name='at-translated-set-2-keyboard', enabled=true})"
+    pkill -SIGRTMIN+8 waybar
 end
 
 function disable_keyboard
     printf "false" >$STATUS_FILE
     notify-send "Built-in Keyboard" "Disabling Keyboard"
-    hyprctl keyword '$LAPTOP_KB_ENABLED' "false" -r
+    hyprctl eval "hl.device({name='at-translated-set-2-keyboard', enabled=false})"
+    pkill -SIGRTMIN+8 waybar
 end
 
 if not test -f $STATUS_FILE
