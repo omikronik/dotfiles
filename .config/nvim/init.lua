@@ -528,6 +528,7 @@ do
 				typescriptreact = true,
 				html = true,
 				css = true,
+				markdown = true,
 			}
 			if enabled_filetypes[vim.bo[bufnr].filetype] then
 				return { timeout_ms = 500 }
@@ -551,6 +552,7 @@ do
 			typescriptreact = { "prettierd", "prettier", stop_after_first = true },
 			html = { "prettierd", "prettier", stop_after_first = true },
 			css = { "prettierd", "prettier", stop_after_first = true },
+			markdown = { "prettierd", "prettier", stop_after_first = true },
 		},
 
 		vim.keymap.set({ "n", "v" }, "<leader>f", function()
@@ -596,8 +598,18 @@ end
 -- linux only
 do
 	if not is_windows then
-		vim.pack.add({ gh("nvim-java/nvim-java") })
-		require("java").setup({})
+		vim.pack.add({
+			{
+				src = gh("JavaHello/spring-boot.nvim"),
+				version = "218c0c26c14d99feca778e4d13f5ec3e8b1b60f0",
+			},
+			gh("MunifTanjim/nui.nvim"),
+			gh("mfussenegger/nvim-dap"),
+
+			gh("nvim-java/nvim-java"),
+		})
+
+		require("java").setup()
 		vim.lsp.enable("jdtls")
 	end
 end
