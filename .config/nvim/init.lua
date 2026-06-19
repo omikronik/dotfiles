@@ -609,7 +609,15 @@ do
 			gh("nvim-java/nvim-java"),
 		})
 
-		require("java").setup()
+		require("java").setup({})
+		vim.lsp.config("jdtls", {
+			handlers = {
+				["language/status"] = function() end,
+				["language/actionableNotification"] = function() end,
+				["language/progressReport"] = function() end,
+				["$/progress"] = function() end,
+			},
+		})
 		vim.lsp.enable("jdtls")
 	end
 end
