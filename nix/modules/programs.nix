@@ -43,5 +43,6 @@
     lm_sensors
     freecad
     obsidian
+    bambu-studio
   ];
 }

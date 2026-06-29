@@ -55,6 +55,7 @@
     fzf
     tmux
     lazygit
+    lazysql
     git-credential-manager
 
     # Compilers and whatnot

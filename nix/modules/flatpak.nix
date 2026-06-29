@@ -2,7 +2,7 @@
 let
   grep = pkgs.gnugrep;
   desiredFlatpaks = [
-    "com.bambulab.BambuStudio"
+    # "com.bambulab.BambuStudio"
   ];
 in {
   system.activationScripts.flatpakManagement = {
