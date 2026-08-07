@@ -44,5 +44,6 @@
     freecad
     obsidian
     bambu-studio
+    zap
   ];
 }

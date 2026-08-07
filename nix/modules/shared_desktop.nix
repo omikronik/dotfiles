@@ -80,5 +80,14 @@
     kdePackages.kolourpaint
     kdePackages.partitionmanager
     shared-mime-info
+    # Dolphin file previews
+    ffmpegthumbnailer
+    icoutils
+    kdePackages.kdegraphics-thumbnailers
+    kdePackages.kimageformats
+    libappimage
+    qt6.qtimageformats
+    resvg
+    taglib
   ];
 }
