@@ -33,6 +33,7 @@
           ../modules/flatpak.nix
           ../modules/qmk.nix
           ../modules/claude-code.nix
+          ../modules/virtualisation.nix
         ];
       };
     };

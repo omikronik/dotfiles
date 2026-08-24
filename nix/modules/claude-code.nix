@@ -16,7 +16,8 @@
   };
 
   environment.systemPackages = with pkgs; [
-    claude-code  # native binary (default, ~180MB self-contained)
+    claude-code
     claude-desktop
+    codex
   ];
 }
