@@ -79,6 +79,7 @@
     kdePackages.kservice
     kdePackages.kolourpaint
     kdePackages.partitionmanager
+    kdePackages.filelight
     shared-mime-info
     # Dolphin file previews
     ffmpegthumbnailer
