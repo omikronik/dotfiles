@@ -57,6 +57,7 @@ end)
 -- See https://wiki.hypr.land/Configuring/Advanced-and-Cool/Environment-variables/
 
 hl.env("GTK_THEME", "Adwaita:dark")
+hl.env("QT_QPA_PLATFORMTHEME", "qt5ct")
 hl.env("GDK_SCALE", "0.8")
 hl.env("XCURSOR_ThEME_BREEZE", "breeze_cursors")
 hl.env("XCURSOR_SIZE", "24")
