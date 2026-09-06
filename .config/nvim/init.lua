@@ -48,31 +48,26 @@ do
 	local TAB_WIDTH_WEB = 2
 	vim.opt.tabstop = TAB_WIDTH
 	vim.opt.softtabstop = TAB_WIDTH
-	vim.bo.shiftwidth = TAB_WIDTH
+	vim.opt.shiftwidth = TAB_WIDTH
 	vim.opt.expandtab = true
 
-	vim.api.nvim_create_autocmd("FileType", {
-		pattern = { "typescript", "typescriptreact", "javascript", "javascriptreact" },
-		callback = function()
-			vim.bo.shiftwidth = TAB_WIDTH_WEB
-			vim.bo.tabstop = TAB_WIDTH_WEB
-			vim.bo.softtabstop = TAB_WIDTH_WEB
-			vim.bo.expandtab = true
-		end,
-	})
+	-- ocp-indent is installed by opam rather than Neovim's package manager.
+	local ocp_indent = vim.fn.expand("~/.opam/default/share/ocp-indent/vim")
+	if vim.fn.isdirectory(ocp_indent) == 1 then
+		vim.opt.runtimepath:prepend(ocp_indent)
+	end
 
 	vim.api.nvim_create_autocmd("FileType", {
-		pattern = { "c", "cpp", "odin", "zig", "rust" },
+		pattern = { "typescript", "typescriptreact", "javascript", "javascriptreact", "html", "css" },
 		callback = function()
-			vim.bo.tabstop = TAB_WIDTH
-			vim.bo.softtabstop = TAB_WIDTH
-			vim.bo.shiftwidth = TAB_WIDTH
+			vim.bo.tabstop = TAB_WIDTH_WEB
+			vim.bo.softtabstop = TAB_WIDTH_WEB
+			vim.bo.shiftwidth = TAB_WIDTH_WEB
 			vim.bo.expandtab = true
 		end,
 	})
 
 	vim.opt.wrap = false
-	vim.wo.wrap = false
 
 	vim.opt.hlsearch = true
 	vim.keymap.set("n", "<ESC>", "<cmd>nohlsearch<CR>")
@@ -91,9 +86,9 @@ do
 	vim.keymap.set("n", "<S-g>", "<S-g>zz", { desc = "Move to bottom and center view" })
 
 	-- move around buffers
-	vim.api.nvim_set_keymap("n", "<leader>bd", ":bp|bd #<CR>", { noremap = true, silent = true })
-	vim.api.nvim_set_keymap("n", "<leader>bp", ":bp<CR>", { noremap = true, silent = true })
-	vim.api.nvim_set_keymap("n", "<leader>bn", ":bn<CR>", { noremap = true, silent = true })
+	vim.keymap.set("n", "<leader>bd", "<cmd>bp|bd #<cr>", { silent = true, desc = "Delete current buffer" })
+	vim.keymap.set("n", "<leader>bp", "<cmd>bp<cr>", { silent = true, desc = "Previous buffer" })
+	vim.keymap.set("n", "<leader>bn", "<cmd>bn<cr>", { silent = true, desc = "Next buffer" })
 
 	vim.keymap.set("n", "<leader>lf", vim.lsp.buf.format, { desc = "format current buffer" })
 
@@ -111,16 +106,11 @@ do
 				vim.diagnostic.open_float({
 					bufnr = bufnr,
 					scope = "cursor",
-					focue = false,
+					focus = false,
 				})
 			end,
 		},
 	})
-
-	-- remove background colours and use terminal bg
-	vim.cmd.hi("Comment gui=none")
-	vim.cmd.hi("Normal guibg=none")
-	vim.cmd.hi("NormalNC guibg=none")
 
 	-- [[ Basic Autocommands ]]
 	--  See `:help lua-guide-autocommands`
@@ -193,9 +183,6 @@ end
 do
 	vim.pack.add({ gh("tpope/vim-sleuth") })
 
-	vim.pack.add({ gh("NMAC427/guess-indent.nvim") })
-	require("guess-indent").setup({})
-
 	vim.pack.add({ gh("lewis6991/gitsigns.nvim") })
 	require("gitsigns").setup({
 		signs = {
@@ -227,6 +214,17 @@ do
 	require("kanagawa-paper").setup({})
 	vim.cmd.colorscheme("kanagawa-paper")
 
+	local function apply_highlights()
+		vim.cmd.hi("Comment gui=none")
+		vim.cmd.hi("Normal guibg=none")
+		vim.cmd.hi("NormalNC guibg=none")
+	end
+	apply_highlights()
+	vim.api.nvim_create_autocmd("ColorScheme", {
+		group = vim.api.nvim_create_augroup("config-colorscheme-overrides", { clear = true }),
+		callback = apply_highlights,
+	})
+
 	vim.pack.add({ gh("folke/todo-comments.nvim") })
 	require("todo-comments").setup({ signs = false })
 
@@ -245,6 +243,12 @@ do
 	require("mini.ai").setup({ n_lines = 500 })
 	require("mini.surround").setup()
 	require("mini.notify").setup({ lsp_progress = { enable = true } })
+	vim.api.nvim_create_autocmd("VimEnter", {
+		once = true,
+		callback = function()
+			vim.notify = MiniNotify.make_notify()
+		end,
+	})
 	require("mini.icons").setup()
 	local statusline = require("mini.statusline")
 	statusline.setup({ use_icons = vim.g.have_nerd_font })
@@ -282,6 +286,9 @@ do
 			},
 		},
 	})
+	pcall(require("telescope").load_extension, "fzf")
+	pcall(require("telescope").load_extension, "ui-select")
+
 	local builtin = require("telescope.builtin")
 	vim.keymap.set("n", "<leader>sh", builtin.help_tags, { desc = "[S]earch [H]elp" })
 	vim.keymap.set("n", "<leader>sk", builtin.keymaps, { desc = "[S]earch [K]eymaps" })
@@ -294,29 +301,6 @@ do
 	vim.keymap.set("n", "<leader>s.", builtin.oldfiles, { desc = '[S]earch Recent Files ("." for repeat)' })
 	vim.keymap.set("n", "<leader>sc", builtin.commands, { desc = "[S]earch [C]ommands" })
 	vim.keymap.set("n", "<leader><leader>", builtin.buffers, { desc = "[ ] Find existing buffers" })
-
-	vim.api.nvim_create_autocmd("LspAttach", {
-		group = vim.api.nvim_create_augroup("telescope-lsp-attach", { clear = true }),
-		callback = function(event)
-			local buf = event.buf
-			vim.keymap.set("n", "grr", builtin.lsp_references, { buffer = buf, desc = "[G]oto [R]eferences" })
-			vim.keymap.set("n", "gri", builtin.lsp_implementations, { buffer = buf, desc = "[G]oto [I]mplementation" })
-			vim.keymap.set("n", "grd", builtin.lsp_definitions, { buffer = buf, desc = "[G]oto [D]efinition" })
-			vim.keymap.set("n", "gO", builtin.lsp_document_symbols, { buffer = buf, desc = "Open Document Symbols" })
-			vim.keymap.set(
-				"n",
-				"gW",
-				builtin.lsp_dynamic_workspace_symbols,
-				{ buffer = buf, desc = "Open Workspace Symbols" }
-			)
-			vim.keymap.set(
-				"n",
-				"grt",
-				builtin.lsp_type_definitions,
-				{ buffer = buf, desc = "[G]oto [T]ype Definition" }
-			)
-		end,
-	})
 
 	vim.keymap.set("n", "<leader>/", function()
 		builtin.current_buffer_fuzzy_find(require("telescope.themes").get_dropdown({
@@ -357,8 +341,10 @@ end
 
 -- LSP
 do
-	vim.pack.add({ gh("j-hui/fidget.nvim") })
-	require("fidget").setup({})
+	vim.pack.add({ gh("folke/lazydev.nvim") })
+	require("lazydev").setup({})
+
+	local highlight_augroup = vim.api.nvim_create_augroup("config-lsp-highlight", { clear = true })
 
 	vim.api.nvim_create_autocmd("LspAttach", {
 		group = vim.api.nvim_create_augroup("config-lsp-attach", { clear = true }),
@@ -368,14 +354,25 @@ do
 				vim.keymap.set(mode, keys, func, { buffer = event.buf, desc = "LSP: " .. desc })
 			end
 
-			map("grn", vim.lsp.buf.rename, "[R]e[n]ame")
-			map("gra", vim.lsp.buf.code_action, "[G]oto Code [A]ction", { "n", "x" })
-			map("grD", vim.lsp.buf.declaration, "[G]oto [D]eclaration")
+			local telescope = require("telescope.builtin")
+			map("gd", telescope.lsp_definitions, "[G]oto [D]efinition")
+			map("gr", telescope.lsp_references, "[G]oto [R]eferences")
+			map("gI", telescope.lsp_implementations, "[G]oto [I]mplementations")
+			map("<leader>D", telescope.lsp_type_definitions, "Type [D]efinition")
+			map("<leader>ws", telescope.lsp_dynamic_workspace_symbols, "[W]orkspace [S]ymbols")
+			map("<leader>rn", vim.lsp.buf.rename, "[R]e[n]ame")
+			map("<leader>ca", vim.lsp.buf.code_action, "[C]ode [A]ction")
+			map("K", vim.lsp.buf.hover, "Hover documentation")
+			map("gD", vim.lsp.buf.declaration, "[G]oto [D]eclaration")
 
-			-- The following two autocommands are used to highlight references of the
+			-- Highlight references only once per buffer, even if multiple clients attach.
 			local client = vim.lsp.get_client_by_id(event.data.client_id)
-			if client and client:supports_method("textDocument/documentHighlight", event.buf) then
-				local highlight_augroup = vim.api.nvim_create_augroup("kickstart-lsp-highlight", { clear = false })
+			if
+				client
+				and client:supports_method("textDocument/documentHighlight", event.buf)
+				and not vim.b[event.buf].lsp_document_highlight_configured
+			then
+				vim.b[event.buf].lsp_document_highlight_configured = true
 				vim.api.nvim_create_autocmd({ "CursorHold", "CursorHoldI" }, {
 					buffer = event.buf,
 					group = highlight_augroup,
@@ -389,10 +386,20 @@ do
 				})
 
 				vim.api.nvim_create_autocmd("LspDetach", {
-					group = vim.api.nvim_create_augroup("kickstart-lsp-detach", { clear = true }),
+					buffer = event.buf,
+					group = highlight_augroup,
 					callback = function(event2)
-						vim.lsp.buf.clear_references()
-						vim.api.nvim_clear_autocmds({ group = "kickstart-lsp-highlight", buffer = event2.buf })
+						vim.schedule(function()
+							local clients = vim.lsp.get_clients({
+								bufnr = event2.buf,
+								method = "textDocument/documentHighlight",
+							})
+							if #clients == 0 and vim.api.nvim_buf_is_valid(event2.buf) then
+								vim.api.nvim_buf_call(event2.buf, vim.lsp.buf.clear_references)
+								vim.api.nvim_clear_autocmds({ group = highlight_augroup, buffer = event2.buf })
+								vim.b[event2.buf].lsp_document_highlight_configured = false
+							end
+						end)
 					end,
 				})
 			end
@@ -402,8 +409,6 @@ do
 	-- enable following lsp's
 	--@type table<string, vim.lsp.Config>
 	local shared_servers = {
-		stylua = {}, -- Used to format Lua code
-
 		-- Special Lua Config, as recommended by neovim help docs
 		lua_ls = {
 			on_init = function(client)
@@ -443,8 +448,8 @@ do
 			},
 		},
 		eslint = {
-			quiet = true,
 			settings = {
+				quiet = true,
 				useFlatConfig = true,
 				experimental = {
 					useFlatConfig = true,
@@ -479,10 +484,15 @@ do
 	-- You can press `g?` for help in this menu.
 	local ensure_installed = vim.tbl_keys(servers or {})
 	vim.list_extend(ensure_installed, {
-		-- You can add other tools here that you want Mason to install
+		"stylua",
 	})
 
 	require("mason-tool-installer").setup({ ensure_installed = ensure_installed })
+
+	-- ocamllsp is installed through opam, so do not ask Mason to install it.
+	if not is_windows then
+		servers.ocamllsp = {}
+	end
 
 	for name, server in pairs(servers) do
 		vim.lsp.config(name, server)
@@ -522,6 +532,8 @@ do
 		format_on_save = function(bufnr)
 			local enabled_filetypes = {
 				lua = true,
+				ocaml = true,
+				ocamlinterface = true,
 				javascript = true,
 				javascriptreact = true,
 				typescript = true,
@@ -531,7 +543,7 @@ do
 				markdown = true,
 			}
 			if enabled_filetypes[vim.bo[bufnr].filetype] then
-				return { timeout_ms = 500 }
+				return { timeout_ms = 3000 }
 			else
 				return nil
 			end
@@ -541,6 +553,9 @@ do
 		},
 		-- You can also specify external formatters in here.
 		formatters_by_ft = {
+			lua = { "stylua" },
+			ocaml = { "ocamlformat" },
+			ocamlinterface = { "ocamlformat" },
 			rust = { "rustfmt" },
 			-- Conform can also run multiple formatters sequentially
 			-- python = { "isort", "black" },
@@ -554,11 +569,11 @@ do
 			css = { "prettierd", "prettier", stop_after_first = true },
 			markdown = { "prettierd", "prettier", stop_after_first = true },
 		},
-
-		vim.keymap.set({ "n", "v" }, "<leader>f", function()
-			require("conform").format({ async = true })
-		end, { desc = "[F]ormat buffer" }),
 	})
+
+	vim.keymap.set({ "n", "v" }, "<leader>f", function()
+		require("conform").format({ async = true, lsp_format = "fallback" })
+	end, { desc = "[F]ormat buffer" })
 end
 
 -- Autocomplete and snippets
@@ -583,7 +598,14 @@ do
 		},
 
 		sources = {
-			default = { "lsp", "path", "snippets" },
+			default = { "lazydev", "lsp", "path", "snippets" },
+			providers = {
+				lazydev = {
+					name = "LazyDev",
+					module = "lazydev.integrations.blink",
+					score_offset = 100,
+				},
+			},
 		},
 
 		snippets = { preset = "luasnip" },
@@ -591,8 +613,6 @@ do
 		fuzzy = { implementation = "lua" },
 		signature = { enabled = true },
 	})
-
-	vim.pack.add({ gh("folke/lazydev.nvim") })
 end
 
 -- linux only
@@ -618,7 +638,7 @@ do
 				["$/progress"] = function() end,
 			},
 		})
-		vim.lsp.enable("jdtls")
+	vim.lsp.enable("jdtls")
 	end
 end
 
