@@ -45,8 +45,10 @@ hl.on("hyprland.start", function()
 	hl.exec_cmd(terminal)
 	hl.exec_cmd("waybar & hyprpaper & dunst & udiskie")
 	hl.exec_cmd("systemctl --user start hyprpolkitagent")
-	hl.exec_cmd('gsettings set org.gnome.desktop.interface color-scheme "prefer-dark"')
-	hl.exec_cmd("gsettings set org.gnome.desktop.interface color-scheme 'prefer-dark'")
+	-- Keep the GTK/GNOME and KDE system colour preferences in agreement. Firefox,
+	-- Thunderbird, portals, and native toolkits consult these settings rather
+	-- than Hyprland's GTK_THEME variable alone.
+	hl.exec_cmd("~/.config/hypr/set-dark-mode.sh")
 end)
 -- Environment variables
 
@@ -57,7 +59,7 @@ end)
 -- See https://wiki.hypr.land/Configuring/Advanced-and-Cool/Environment-variables/
 
 hl.env("GTK_THEME", "Adwaita:dark")
-hl.env("QT_QPA_PLATFORMTHEME", "qt5ct")
+hl.env("QT_QPA_PLATFORMTHEME", "kde")
 hl.env("GDK_SCALE", "0.8")
 hl.env("XCURSOR_ThEME_BREEZE", "breeze_cursors")
 hl.env("XCURSOR_SIZE", "24")

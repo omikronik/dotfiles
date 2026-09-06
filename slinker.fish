@@ -58,6 +58,10 @@ function tests
     touch "$TESTPATH"test1_dotfile_config_folder_does_not_exist.txt
     log -a -i "Created test file 1"
 
+    mkdir -p "$CONFTESTPATH"
+    echo "default config" > "$CONFTESTPATH"test1_dotfile_config_folder_does_not_exist.txt
+    log -a -i "Created an existing target to back up"
+
     # Ensure test file 2 doesn't exist (for negative test)
     if test -f "$TESTPATH"test2_does_not_exist.txt
         rm "$TESTPATH"test2_does_not_exist.txt
@@ -67,17 +71,36 @@ function tests
     log -a -i "Running symlink tests..."
     log -a -i "=========================="
 
-    # Test 1: Should succeed
+    # Test 1: Existing target should become .bak and be replaced by a symlink.
     create-symlink \
         test1_dotfile_config_folder_does_not_exist.txt \
         $TESTPATH \
         $CONFTESTPATH
 
-    # Test 2: Should fail (file doesn't exist)
+    if test -L "$CONFTESTPATH"test1_dotfile_config_folder_does_not_exist.txt; and \
+            test -f "$CONFTESTPATH"test1_dotfile_config_folder_does_not_exist.txt.bak
+        log -a -s "Success: existing target was backed up and linked."
+    else
+        log -a -e "Error: backup-and-link test failed."
+        return 1
+    end
+
+    # Test 2: Re-running against the correct link should be a no-op.
     create-symlink \
-        test2_does_not_exist.txt \
+        test1_dotfile_config_folder_does_not_exist.txt \
         $TESTPATH \
         $CONFTESTPATH
+
+    # Test 3: A missing source should fail without creating a link.
+    if create-symlink \
+            test2_does_not_exist.txt \
+            $TESTPATH \
+            $CONFTESTPATH
+        log -a -e "Error: missing-source test unexpectedly succeeded."
+        return 1
+    else
+        log -a -s "Success: missing source was rejected."
+    end
 
     log -a -i "Tests completed"
 end
@@ -86,47 +109,64 @@ function create-symlink
     set file_to_link $argv[1]
     set dot_location $argv[2]
     set target_location $argv[3]
+    set source_path "$dot_location$file_to_link"
+    set target_path "$target_location$file_to_link"
 
     log -a -i INFO: running create-symlink for $file_to_link
     log -a -i "==============================="
-    # check if the dotfile exists. also proves
-    if test -e $dot_location$file_to_link
-        log INFO: dotfile $dot_location$file_to_link exists
+    if test -e "$source_path"
+        log INFO: dotfile $source_path exists
     else
-        log -a ERROR: dotfile $file_to_link does not exist
+        log -a -e Error: dotfile $file_to_link does not exist
         if test $DRY_RUN != true
-            exit
+            return 1
         end
+        return
     end
 
-    # check if target location exists
-    # else create it
-    if test -e $target_location
+    if test -e "$target_location"
         log Info: target $target_location exists
     else
         if test $DRY_RUN = false
-            mkdir -p $target_location
+            mkdir -p "$target_location"
         end
         log -a Info: created $target_location
     end
 
-    # check if there is already a symlink with the targets name
-    if test -L $target_location$file_to_link
-        log -a -w Warning: symlink for $file_to_link exists, skipping.(set_color normal)
-    else
-        # create symlink
-        if test $DRY_RUN != true
-            ln -s $dot_location$file_to_link $target_location
-            # now test for symlink
-            if test -L $target_location$file_to_link
-                log -a -s Success: created symlink for $file_to_link(set_color normal)
-            else
-                log -a -e Error: Symlink creation failed
-            end
-        else
-            log -i -w Warning: dry run mode, did not attempt link
+    if test -L "$target_path"
+        if test (readlink -f "$target_path") = (readlink -f "$source_path")
+            log -a -s Success: $file_to_link is already linked correctly.(set_color normal)
+            echo \n
+            return
+        end
+    end
+
+    # Preserve existing files and stale links. If a backup already exists,
+    # keep it too and select the next numbered name ending in .bak.
+    if test -e "$target_path"; or test -L "$target_path"
+        set backup_path "$target_path.bak"
+        set backup_number 1
+        while test -e "$backup_path"; or test -L "$backup_path"
+            set backup_path "$target_path.$backup_number.bak"
+            set backup_number (math $backup_number + 1)
         end
 
+        if test $DRY_RUN = false
+            mv -- "$target_path" "$backup_path"
+        end
+        log -a -w Warning: moved existing $target_path to $backup_path.(set_color normal)
+    end
+
+    if test $DRY_RUN = false
+        ln -s "$source_path" "$target_path"
+        if test -L "$target_path"
+            log -a -s Success: created symlink for $file_to_link.(set_color normal)
+        else
+            log -a -e Error: symlink creation failed for $file_to_link.
+            return 1
+        end
+    else
+        log -a -w Warning: dry run mode, did not create $target_path.(set_color normal)
     end
 
     echo \n
@@ -223,6 +263,11 @@ else
         "$CONFIG_BASE_PATH"hypr/
 
     create-symlink \
+        set-dark-mode.sh \
+        "$DOTFILES_CONFIG_PATH"hypr/ \
+        "$CONFIG_BASE_PATH"hypr/
+
+    create-symlink \
         hyprlock.conf \
         "$DOTFILES_CONFIG_PATH"hypr/ \
         "$CONFIG_BASE_PATH"hypr/
@@ -231,6 +276,11 @@ else
         hyprpaper.conf \
         "$DOTFILES_CONFIG_PATH"hypr/ \
         "$CONFIG_BASE_PATH"hypr/
+
+    create-symlink \
+        portals.conf \
+        "$DOTFILES_CONFIG_PATH"xdg-desktop-portal/ \
+        "$CONFIG_BASE_PATH"xdg-desktop-portal/
 
     create-symlink \
         config.jsonc \
