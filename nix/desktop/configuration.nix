@@ -65,7 +65,7 @@
     variant = "";
   };
 
-  # Enable CUPS to print documents.
+  # Enable CUPS to print documents.YOUR-UUID-HERE
   services.printing.enable = true;
   services.avahi = {
     enable = true;
@@ -96,6 +96,11 @@
   # Enable the OpenSSH daemon.
   services.openssh.enable = true;
   services.flatpak.enable = true;
+
+  fileSystems."/mnt/storage" = {
+    device = "/dev/disk/by-uuid/ae52c48b-284d-46a0-9464-2a4ea0eb16d4";
+    fsType = "btrfs";
+  };
 
   # This value determines the NixOS release from which the default
   # settings for stateful data, like file locations and database versions

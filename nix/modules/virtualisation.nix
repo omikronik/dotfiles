@@ -5,7 +5,11 @@
   ...
 }: {
   programs.virt-manager.enable = true;
-  users.groupd.libvirtd.members = ["yasir"];
+  users.groups.libvirtd.members = ["yasir"];
   virtualisation.libvirtd.enable = true;
   virtualisation.spiceUSBRedirection.enable = true;
+
+  environment.systemPackages = with pkgs; [
+    swtpm
+  ];
 }
