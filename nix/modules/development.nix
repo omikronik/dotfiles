@@ -98,6 +98,13 @@
     # zig
     zig
     zls
+    # ocaml
+    dune
+    ocamlPackages.ocaml
+    ocamlPackages.ocaml-lsp
+    ocamlPackages.odoc
+    ocamlPackages.utop
+    ocamlformat
 
     usbutils
 

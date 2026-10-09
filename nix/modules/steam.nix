@@ -27,6 +27,11 @@
         proton-ge-bin
       ];
       gamescopeSession.enable = true;
+      package = pkgs.steam.override {
+        extraPkgs = (pkgs: with pkgs; [
+          gamemode
+        ]);
+      };
     };
 
     # for games that are distributed as appimage

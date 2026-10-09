@@ -74,7 +74,6 @@
     kdePackages.kio-admin
     kdePackages.qtwayland
     kdePackages.plasma-integration
-    kdePackages.kdegraphics-thumbnailers
     kdePackages.qtsvg
     kdePackages.kservice
     kdePackages.kolourpaint
@@ -90,5 +89,7 @@
     qt6.qtimageformats
     resvg
     taglib
+
+    plasticity
   ];
 }
